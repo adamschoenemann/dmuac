@@ -315,6 +315,20 @@ $$
 A → B, A → \lnot B \vdash \lnot A
 $$
 
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            \boxed{A} \quad A → B
+        }{B} {\scriptstyle \\{ →E \\}}
+        \quad\quad
+        \dfrac{
+            \boxed{A} \quad\quad A → (B → \mathtt{False})
+        }{B → \mathtt{False}} {\scriptstyle \\{ →E \\}}
+    } {\mathtt{False}} {\scriptstyle \\{ →E \\}}
+}{A → \mathtt{False}} {\scriptstyle \\{ →I \\}}
+$$
+
 Exercise 39
 -----------
 $$
