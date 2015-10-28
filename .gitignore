@@ -1,0 +1,5 @@
+*.hi
+*.o
+*.tmp
+*.sublime-project
+*.sublime-workspace
