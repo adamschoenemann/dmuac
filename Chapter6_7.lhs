@@ -332,7 +332,27 @@ $$
 Exercise 39
 -----------
 $$
-\lnot \vdash (A → B) ∧ (A → \lnot B)
+\lnot A \vdash (A → B) ∧ (A → \lnot B)
+$$
+
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            \dfrac{
+                \boxed{A} \quad\quad A → \mathtt{False} 
+            }{\mathtt{False}} {\scriptstyle \\{ → E \\}}
+        }{B} {\scriptstyle \\{ CTR \\}}
+    } {A → B} {\scriptstyle \\{ → I \\}}
+    \quad\quad
+    \dfrac{
+        \dfrac{
+            \dfrac{
+                \boxed{A} \quad\quad A → \mathtt{False}
+            }{\mathtt{False}}
+        }{\lnot B} {\scriptstyle \\{ CTR \\}}
+    } {A → \lnot B} {\scriptstyle \\{ → I \\}}
+}{A → B ∧ A → \lnot B} {\scriptstyle \\{ ∧ I \\}}
 $$
 
 Exercise 40
@@ -341,10 +361,44 @@ $$
 A ∨ (B ∨ C) \vdash (A ∨ B) ∨ C
 $$
 
+$$
+\dfrac{
+    \dfrac{}{A ∨ (B ∨ C)}
+    \quad
+    \dfrac{
+        \dfrac{\boxed{A}}{A ∨ B} {\scriptstyle \\{ ∨ I_L \\}}
+    }{(A ∨ B) ∨ C} {\scriptstyle \\{ ∨ I_L \\}}
+    \quad
+    \dfrac{
+        \dfrac{}{\boxed{B ∨ C}}
+        \quad
+        \dfrac{
+            \dfrac{\boxed{B}}{A ∨ B} {\scriptstyle \\{ ∨ I_R \\}}
+        }{(A ∨ B) ∨ C}  {\scriptstyle \\{ ∨ I_L \\}}
+        \quad
+        \dfrac{
+            \boxed{C}
+        }{(A ∨ B) ∨ C} {\scriptstyle \\{ ∨ I_R \\}}
+    }{(A ∨ B) ∨ C} {\scriptstyle \\{ ∨ E \\}}
+} {(A ∨ B) ∨ C} {\scriptstyle \\{ ∨ E \\}}
+$$
+
 Exercise 41
 -----------
 $$
 P,Q,R,S \vdash (P ∧ Q) ∧ (R ∧ S)
+$$
+
+$$
+\dfrac{
+    \dfrac{
+        P \quad Q
+    }{P ∧ Q} {\scriptstyle \\{∧I \\}}
+    \quad
+    \dfrac{
+        R \quad S
+    }{R ∧ S} {\scriptstyle \\{∧I \\}}
+}{(P ∧ Q) ∧ (R ∧ S)} {\scriptstyle \\{∧I \\}}
 $$
 
 Exercise 42
@@ -353,9 +407,45 @@ $$
 P → R \vdash P ∧ Q → R
 $$
 
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            \boxed{P ∧ Q}
+        }{P} {\scriptstyle \\{ ∧ E_L \\}}
+        \quad
+        \dfrac{}{P → R}
+    } {R} {\scriptstyle \\{ → E \\}}
+}{P ∧ Q → R} {\scriptstyle \\{ → I \\}}
+$$
 Exercise 43
 -----------
 Use the inference rules to calculate the value of $\mathtt{True} ∨ \mathtt{True}$
+
+First prove the implication that  $\mathtt{True} ∨ \mathtt{True} → \mathtt{True}$
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{}{\boxed{\mathtt{True} ∨ \mathtt{True}}}
+        \quad
+        \dfrac{\boxed{\mathtt{True}}}{\mathtt{True}} {\scriptstyle \\{ ID \\}}
+        \dfrac{\boxed{\mathtt{True}}}{\mathtt{True}} {\scriptstyle \\{ ID \\}}
+    }{\mathtt{True}} {\scriptstyle \\{ ∨ E \\}}
+} {\mathtt{True} ∨ \mathtt{True} → \mathtt{True}} {\scriptstyle \\{ → I \\}}
+$$
+
+Next prove the implication that  $\mathtt{True} → \mathtt{True} ∨ \mathtt{True}$
+
+$$
+\dfrac{
+    \dfrac{
+        \boxed{\mathtt{True}}
+    } {\mathtt{True} ∨ \mathtt{True}} {\scriptstyle \\{ ∨ I_L \\}}
+} {\mathtt{True} → \mathtt{True} ∨ \mathtt{True}} {\scriptstyle \\{ → I \\}}
+$$
+
+Therefore, we can conclude that
+$\mathtt{True} ∨ \mathtt{True} \leftrightarrow \mathtt{True}$
 
 Exercise 44
 -----------
