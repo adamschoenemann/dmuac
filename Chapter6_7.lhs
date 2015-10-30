@@ -449,3 +449,106 @@ $\mathtt{True} ∨ \mathtt{True} \leftrightarrow \mathtt{True}$
 
 Exercise 44
 -----------
+Use the inference rules to calculate the value of $\mathtt{False} → \mathtt{True}$
+
+$$
+\dfrac{
+    \dfrac{
+         \boxed{\mathtt{False}}
+    }{\mathtt{False} → \mathtt{False}} {\scriptstyle \\{ → I \\}}
+}{(\mathtt{False} → \mathtt{True}) → \mathtt{True}} {\scriptstyle \\{ → I \\}}
+$$
+
+$$
+\dfrac{
+    \dfrac{
+        \boxed{\mathtt{True}}
+    } {\mathtt{False} → \mathtt{True}} {\scriptstyle \\{ → I \\}}
+}{\mathtt{True} → (\mathtt{False} → \mathtt{True})} {\scriptstyle \\{ → I \\}}
+$$
+
+Exercise 45
+-----------
+Suppose that you were given the following code:
+
+> (/\) = (&&)
+> (\/) = (||)
+> (<=>) = (==)
+
+> False ==> False = True
+> False ==> True  = True
+> True  ==> False = False
+> True  ==> True  = True
+
+> logicExpr1 :: Bool -> Bool -> Bool
+> logicExpr1 a b = a /\ b \/ a <=> a
+
+> logicExpr2 :: Bool -> Bool -> Bool
+> logicExpr2 a b = (a \/ b) /\ b <=> (a /\ b)
+
+Each of these functions specifies a Boolean expression. What are the truth
+values of these expressions? How would you write a list comprehension
+that can calculate the values for you to check your work?
+
+First one:
+
+|  a  |  b  | a /\ b \/ a | a /\ b \/ a <=> a |
+| :-: | :-: | :---------: | :---------------: |
+|  0  |  0  |      0      |         1         |
+|  0  |  1  |      0      |         1         |
+|  1  |  0  |      1      |         1         |
+|  1  |  1  |      1      |         1         |
+
+Comprehension:
+
+> e1 = [(x, y, logicExpr1 x y) | x <- [False, True], y <- [False, True]]
+
+Second one:
+
+|  a  |  b  | (a \/ b) /\ b | (a \/ b) /\ b <=> a /\ b |
+| :-: | :-: | :-----------: | :----------------------: |
+|  0  |  0  |       0       |            1             |
+|  0  |  1  |       1       |            0             |
+|  1  |  0  |       0       |            0             |
+|  1  |  1  |       1       |            1             |
+
+Comprehension:
+
+> e2 = [(x, y, logicExpr2 x y) | x <- [False, True], y <- [False, True]]
+
+Exercise 46
+-----------
+Work out the values of these expressions, then check with a list
+comprehension:
+
+> logicExpr3 :: Bool -> Bool -> Bool -> Bool
+> logicExpr3 a b c
+>    = ((a /\ b) \/ (a /\ c)) ==> (a \/ b)
+
+|  a  |  b  |  c  | a /\ b | a /\ c | a \/ b | (a /\ b) \/ (a /\ c) | (a /\ b) \/ (a /\ c) ==> a \/ b |
+| :-: | :-: | :-: | :----: | :----: | :----: | :------------------: | :-----------------------------: |
+|  0  |  0  |  0  |   0    |   0    |   0    |          0           |                1                |
+|  0  |  0  |  1  |   0    |   0    |   0    |          0           |                1                |
+|  0  |  1  |  0  |   0    |   0    |   1    |          0           |                1                |
+|  0  |  1  |  1  |   0    |   0    |   1    |          0           |                1                |
+|  1  |  0  |  0  |   0    |   0    |   1    |          0           |                1                |
+|  1  |  0  |  1  |   0    |   1    |   1    |          1           |                1                |
+|  1  |  1  |  0  |   1    |   0    |   1    |          1           |                1                |
+|  1  |  1  |  1  |   1    |   1    |   1    |          1           |                1                |
+
+> e3 = [(a,b,c, logicExpr3 a b c) | a <- [False, True], b <- [False, True], c <- [False, True]]
+
+> logicExpr4 :: Bool -> Bool -> Bool -> Bool
+> logicExpr4 a b c
+>     = (a /\ (b \/ c)) \/ (a \/ c) ==> (a \/ c)
+
+|  a  |  b  |  c  | a /\ b | a /\ c | a \/ b | (a /\ b) \/ (a /\ c) | (a /\ b) \/ (a /\ c) ==> a \/ b |
+| :-: | :-: | :-: | :----: | :----: | :----: | :------------------: | :-----------------------------: |
+|  0  |  0  |  0  |   0    |   0    |   0    |          0           |                1                |
+|  0  |  0  |  1  |   0    |   0    |   0    |          0           |                1                |
+|  0  |  1  |  0  |   0    |   0    |   1    |          0           |                1                |
+|  0  |  1  |  1  |   0    |   0    |   1    |          0           |                1                |
+|  1  |  0  |  0  |   0    |   0    |   1    |          0           |                1                |
+|  1  |  0  |  1  |   0    |   1    |   1    |          1           |                1                |
+|  1  |  1  |  0  |   1    |   0    |   1    |          1           |                1                |
+|  1  |  1  |  1  |   1    |   1    |   1    |          1           |                1                |
