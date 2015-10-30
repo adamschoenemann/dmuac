@@ -552,3 +552,71 @@ comprehension:
 |  1  |  0  |  1  |   0    |   1    |   1    |          1           |                1                |
 |  1  |  1  |  0  |   1    |   0    |   1    |          1           |                1                |
 |  1  |  1  |  1  |   1    |   1    |   1    |          1           |                1                |
+
+Exercise 47
+-----------
+Using the `Logic` data type defined below, define a function
+`distribute` that rewrites an expression using the distributive law, and a function
+`deMorgan` tht does the same for DeMorgan's law.
+
+> data Logic = A | B | C
+>   | And Logic Logic
+>   | Or Logic Logic
+>   | Not Logic
+>   | Imply Logic Logic
+>   | Equiv Logic Logic
+>   deriving (Eq, Show)
+
+> distribute :: Logic -> Logic
+> distribute e@((a `And` b) `Or` (c `And` d))
+>                | a == c    = a `And` (b `Or` d) 
+>                | otherwise = e
+> distribute e@((a `Or` b) `And` (c `Or` d))
+>                | a == c    = a `Or` (b `And` d) 
+>                | otherwise = e
+> distribute (a `And` (b `Or` d)) = (a `And` b) `Or` (a `And` d)
+> distribute (a `Or` (b `And` d)) = (a `Or` b) `And` (a `Or` d)
+> distribute e = e
+
+> deMorgan :: Logic -> Logic
+> deMorgan (Not (A `And` B))   = Not A `Or` Not B
+> deMorgan (Not (A `Or`  B))   = Not A `And` Not B
+> deMorgan (Not A `Or` Not B)  = (Not (A `And` B))
+> deMorgan (Not A `And` Not B) = (Not (A `Or`  B))
+> deMorgan e = e
+
+Exercise 48
+-----------
+Use equational reasoning (boolean algebra) to prove that
+$$
+    (C ∧ A ∧ B) ∨ C = C ∧ (C ∨ (A ∧ B))
+$$
+
+$$
+\begin{align}
+  & (C ∧ A ∧ B) ∨ C & \\\
+= & C ∨ (C ∧ A ∧ B) & \\{ ∨ \text{ commutes} \\} \\\
+= & C ∨ (C ∧ (A ∧ B)) & \\{ ∨ \text{ associative} \\} \\\
+= & (C ∨ C) ∧ (C ∨ (A ∧ B)) &  \\{ ∨ \text{ over } ∧ \\} \\\
+= & C ∧ (C ∨ (A ∧ B)) &  \\{ ∨ \text{ idempotent } ∧ \\} \\\
+\end{align}
+$$
+
+Exercise 49
+-----------
+Prove that
+$$
+C ∨ (A ∧ (B ∨ C)) = ((C ∨ A) ∧ C) ∨ (A ∧ B)
+$$
+
+$$
+\begin{align}
+  & C ∨ (A ∧ (B ∨ C)) & \\\
+= & C ∨ ((A ∧ B) ∨ (A ∧ C)) & \\{ ∧ \text{ over } ∨ \\} \\\
+= & C ∨ ((A ∧ C) ∨ (A ∧ B)) & \\{ ∨ \text{ commutes } \\} \\\
+= & (C ∨ (A ∧ C)) ∨ (A ∧ B) & \\{ ∨ \text{ assoc } \\} \\\
+= & ((C ∨ A) ∧ (C ∧ C)) ∨ (A ∧ B) & \\{ ∨ \text{ over } ∧ \\} \\\
+= & ((C ∨ A) ∧ C) ∨ (A ∧ B) & \\{ ∧ \text{ idempotent } ∧ \\} \\\
+& Q.E.D
+\end{align}
+$$
