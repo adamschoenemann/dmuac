@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Chapter7.lhs—F:\Projects\dmuac</title>
+    <style type="text/css">
+    html{font-family: sans-serif;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%}body{margin: 0}article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display: block}audio,canvas,progress,video{display: inline-block;vertical-align: baseline}audio:not([controls]){display: none;height: 0}[hidden],template{display: none}a{background: transparent}a:active,a:hover{outline: 0}abbr[title]{border-bottom: 1px dotted}b,strong{font-weight: bold}dfn{font-style: italic}h1{font-size: 2em;margin: 0.67em 0}mark{background: #ff0;color: #000}small{font-size: 80%}sub,sup{font-size: 75%;line-height: 0;position: relative;vertical-align: baseline}sup{top: -0.5em}sub{bottom: -0.25em}img{border: 0}svg:not(:root){overflow: hidden}figure{margin: 1em 40px}hr{box-sizing: content-box;height: 0}pre{overflow: auto}code,kbd,pre,samp{font-family: monospace, monospace;font-size: 1em}button,input,optgroup,select,textarea{color: inherit;font: inherit;margin: 0}button{overflow: visible}button,select{text-transform: none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance: button;cursor: pointer}button[disabled],html input[disabled]{cursor: default}button::-moz-focus-inner,input::-moz-focus-inner{border: 0;padding: 0}input{line-height: normal}input[type="checkbox"],input[type="radio"]{box-sizing: border-box;padding: 0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height: auto}input[type="search"]{-webkit-appearance: textfield;box-sizing: content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance: none}fieldset{border: 1px solid #c0c0c0;margin: 0 2px;padding: 0.35em 0.625em 0.75em}legend{border: 0;padding: 0}textarea{overflow: auto}optgroup{font-weight: bold}table{border-collapse: collapse;border-spacing: 0}td,th{padding: 0}*{box-sizing: border-box}input,select,textarea,button{font: 13px/1.4 Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"}body{min-width: 1020px;font: 13px/1.4 Helvetica, arial, freesans, clean, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";color: #333;background-color: #fff}a{color: #4183c4;text-decoration: none}a:hover,a:active{text-decoration: underline}hr,.rule{height: 0;margin: 15px 0;overflow: hidden;background: transparent;border: 0;border-bottom: 1px solid #ddd}hr:before,.rule:before{display: table;content: ""}hr:after,.rule:after{display: table;clear: both;content: ""}h1,h2,h3,h4,h5,h6{margin-top: 15px;margin-bottom: 15px;line-height: 1.1}h1{font-size: 30px}h2{font-size: 21px}h3{font-size: 16px}h4{font-size: 14px}h5{font-size: 12px}h6{font-size: 11px}small{font-size: 90%}blockquote{margin: 0}.lead{margin-bottom: 30px;font-size: 20px;font-weight: 300;color: #555}.text-muted{color: #999}.text-danger{color: #bd2c00}.text-emphasized{font-weight: bold;color: #333}ul,ol{padding: 0;margin-top: 0;margin-bottom: 0}ol ol,ul ol{list-style-type: lower-roman}ul ul ol,ul ol ol,ol ul ol,ol ol ol{list-style-type: lower-alpha}dd{margin-left: 0}tt,code{font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;font-size: 12px}pre{margin-top: 0;margin-bottom: 0;font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace}#realtime .status{overflow: visible;position: absolute;top: -5px;left: 0;background: url("/public/images/github-status.png");width: 26px;height: 26px;display: block;margin: 0 5px 0 0}#realtime .up{background-position: 0 0}#realtime .problem{background-position: 0 -53px}#realtime .down{background-position: 0 -26px}.container{max-width: 920px;margin: 0 auto 20px auto}#header{background: #FAFAFA;background: -moz-linear-gradient(#FAFAFA, #EAEAEA);background: -webkit-linear-gradient(#FAFAFA, #EAEAEA);-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#fafafa', endColorstr='#eaeaea')";border-bottom: 1px solid #CACACA;box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4),0 0 10px rgba(0, 0, 0, 0.1)}#markup{padding: 3px}#markup article{padding-top: 30px}.markdown-body{overflow: hidden;font-family: "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;font-size: 16px;line-height: 1.6;word-wrap: break-word}.markdown-body>*:first-child{margin-top: 0 !important}.markdown-body>*:last-child{margin-bottom: 0 !important}.markdown-body .absent{color: #c00}.markdown-body .anchor{position: absolute;top: 0;left: 0;display: block;padding-right: 6px;padding-left: 30px;margin-left: -30px}.markdown-body .anchor:focus{outline: none}.markdown-body h1,.markdown-body h2,.markdown-body h3,.markdown-body h4,.markdown-body h5,.markdown-body h6{position: relative;margin-top: 1em;margin-bottom: 16px;font-weight: bold;line-height: 1.4}.markdown-body h1 .octicon-link,.markdown-body h2 .octicon-link,.markdown-body h3 .octicon-link,.markdown-body h4 .octicon-link,.markdown-body h5 .octicon-link,.markdown-body h6 .octicon-link{display: none;color: #000;vertical-align: middle}.markdown-body h1:hover .anchor,.markdown-body h2:hover .anchor,.markdown-body h3:hover .anchor,.markdown-body h4:hover .anchor,.markdown-body h5:hover .anchor,.markdown-body h6:hover .anchor{padding-left: 8px;margin-left: -30px;text-decoration: none}.markdown-body h1:hover .anchor .octicon-link,.markdown-body h2:hover .anchor .octicon-link,.markdown-body h3:hover .anchor .octicon-link,.markdown-body h4:hover .anchor .octicon-link,.markdown-body h5:hover .anchor .octicon-link,.markdown-body h6:hover .anchor .octicon-link{display: inline-block}.markdown-body h1 tt,.markdown-body h1 code,.markdown-body h2 tt,.markdown-body h2 code,.markdown-body h3 tt,.markdown-body h3 code,.markdown-body h4 tt,.markdown-body h4 code,.markdown-body h5 tt,.markdown-body h5 code,.markdown-body h6 tt,.markdown-body h6 code{font-size: inherit}.markdown-body h1{padding-bottom: 0.3em;font-size: 2.25em;line-height: 1.2;border-bottom: 1px solid #eee}.markdown-body h1 .anchor{line-height: 1}.markdown-body h2{padding-bottom: 0.3em;font-size: 1.75em;line-height: 1.225;border-bottom: 1px solid #eee}.markdown-body h2 .anchor{line-height: 1}.markdown-body h3{font-size: 1.5em;line-height: 1.43}.markdown-body h3 .anchor{line-height: 1.2}.markdown-body h4{font-size: 1.25em}.markdown-body h4 .anchor{line-height: 1.2}.markdown-body h5{font-size: 1em}.markdown-body h5 .anchor{line-height: 1.1}.markdown-body h6{font-size: 1em;color: #777}.markdown-body h6 .anchor{line-height: 1.1}.markdown-body p,.markdown-body blockquote,.markdown-body ul,.markdown-body ol,.markdown-body dl,.markdown-body table,.markdown-body pre{margin-top: 0;margin-bottom: 16px}.markdown-body hr{height: 4px;padding: 0;margin: 16px 0;background-color: #e7e7e7;border: 0 none}.markdown-body ul,.markdown-body ol{padding-left: 2em}.markdown-body ul.no-list,.markdown-body ol.no-list{padding: 0;list-style-type: none}.markdown-body ul ul,.markdown-body ul ol,.markdown-body ol ol,.markdown-body ol ul{margin-top: 0;margin-bottom: 0}.markdown-body li>p{margin-top: 16px}.markdown-body dl{padding: 0}.markdown-body dl dt{padding: 0;margin-top: 16px;font-size: 1em;font-style: italic;font-weight: bold}.markdown-body dl dd{padding: 0 16px;margin-bottom: 16px}.markdown-body blockquote{padding: 0 15px;color: #777;border-left: 4px solid #ddd}.markdown-body blockquote>:first-child{margin-top: 0}.markdown-body blockquote>:last-child{margin-bottom: 0}.markdown-body table{display: block;width: 100%;overflow: auto;word-break: normal;word-break: keep-all}.markdown-body table th{font-weight: bold}.markdown-body table th,.markdown-body table td{padding: 6px 13px;border: 1px solid #ddd}.markdown-body table tr{background-color: #fff;border-top: 1px solid #ccc}.markdown-body table tr:nth-child(2n){background-color: #f8f8f8}.markdown-body img{max-width: 100%;box-sizing: border-box}.markdown-body span.frame{display: block;overflow: hidden}.markdown-body span.frame>span{display: block;float: left;width: auto;padding: 7px;margin: 13px 0 0;overflow: hidden;border: 1px solid #ddd}.markdown-body span.frame span img{display: block;float: left}.markdown-body span.frame span span{display: block;padding: 5px 0 0;clear: both;color: #333}.markdown-body span.align-center{display: block;overflow: hidden;clear: both}.markdown-body span.align-center>span{display: block;margin: 13px auto 0;overflow: hidden;text-align: center}.markdown-body span.align-center span img{margin: 0 auto;text-align: center}.markdown-body span.align-right{display: block;overflow: hidden;clear: both}.markdown-body span.align-right>span{display: block;margin: 13px 0 0;overflow: hidden;text-align: right}.markdown-body span.align-right span img{margin: 0;text-align: right}.markdown-body span.float-left{display: block;float: left;margin-right: 13px;overflow: hidden}.markdown-body span.float-left span{margin: 13px 0 0}.markdown-body span.float-right{display: block;float: right;margin-left: 13px;overflow: hidden}.markdown-body span.float-right>span{display: block;margin: 13px auto 0;overflow: hidden;text-align: right}.markdown-body code,.markdown-body tt{padding: 0;padding-top: 0.2em;padding-bottom: 0.2em;margin: 0;font-size: 85%;background-color: rgba(0,0,0,0.04);border-radius: 3px}.markdown-body code:before,.markdown-body code:after,.markdown-body tt:before,.markdown-body tt:after{letter-spacing: -0.2em;content: "\00a0"}.markdown-body code br,.markdown-body tt br{display: none}.markdown-body del code{text-decoration: inherit}.markdown-body pre>code{padding: 0;margin: 0;font-size: 100%;word-break: normal;white-space: pre;background: transparent;border: 0}.markdown-body .highlight{margin-bottom: 16px}.markdown-body .highlight pre,.markdown-body pre{padding: 16px;overflow: auto;font-size: 85%;line-height: 1.45;background-color: #f7f7f7;border-radius: 3px}.markdown-body .highlight pre{margin-bottom: 0;word-break: normal}.markdown-body pre{word-wrap: normal}.markdown-body pre code,.markdown-body pre tt{display: inline;max-width: initial;padding: 0;margin: 0;overflow: initial;line-height: inherit;word-wrap: normal;background-color: transparent;border: 0}.markdown-body pre code:before,.markdown-body pre code:after,.markdown-body pre tt:before,.markdown-body pre tt:after{content: normal}.markdown-body kbd{display: inline-block;padding: 3px 5px;font-size: 11px;line-height: 10px;color: #555;vertical-align: middle;background-color: #fcfcfc;border: solid 1px #ccc;border-bottom-color: #bbb;border-radius: 3px;box-shadow: inset 0 -1px 0 #bbb}.codehilite{background: #ffffff}.codehilite .c{color: #999988;font-style: italic}.codehilite .err{color: #a61717;background-color: #e3d2d2}.codehilite .k{color: #000000;font-weight: bold}.codehilite .o{color: #000000;font-weight: bold}.codehilite .cm{color: #999988;font-style: italic}.codehilite .cp{color: #999999;font-weight: bold}.codehilite .c1{color: #999988;font-style: italic}.codehilite .cs{color: #999999;font-weight: bold;font-style: italic}.codehilite .gd{color: #000000;background-color: #ffdddd}.codehilite .gd .x{color: #000000;background-color: #ffaaaa}.codehilite .ge{color: #000000;font-style: italic}.codehilite .gr{color: #aa0000}.codehilite .gh{color: #999999}.codehilite .gi{color: #000000;background-color: #ddffdd}.codehilite .gi .x{color: #000000;background-color: #aaffaa}.codehilite .go{color: #888888}.codehilite .gp{color: #555555}.codehilite .gs{font-weight: bold}.codehilite .gu{color: #aaaaaa}.codehilite .gt{color: #aa0000}.codehilite .kc{color: #000000;font-weight: bold}.codehilite .kd{color: #000000;font-weight: bold}.codehilite .kp{color: #000000;font-weight: bold}.codehilite .kr{color: #000000;font-weight: bold}.codehilite .kt{color: #445588;font-weight: bold}.codehilite .m{color: #009999}.codehilite .s{color: #d14}.codehilite .na{color: #008080}.codehilite .nb{color: #0086B3}.codehilite .nc{color: #445588;font-weight: bold}.codehilite .no{color: #008080}.codehilite .ni{color: #800080}.codehilite .ne{color: #990000;font-weight: bold}.codehilite .nf{color: #990000;font-weight: bold}.codehilite .nn{color: #555555}.codehilite .nt{color: #000080}.codehilite .nv{color: #008080}.codehilite .ow{color: #000000;font-weight: bold}.codehilite .w{color: #bbbbbb}.codehilite .mf{color: #009999}.codehilite .mh{color: #009999}.codehilite .mi{color: #009999}.codehilite .mo{color: #009999}.codehilite .sb{color: #d14}.codehilite .sc{color: #d14}.codehilite .sd{color: #d14}.codehilite .s2{color: #d14}.codehilite .se{color: #d14}.codehilite .sh{color: #d14}.codehilite .si{color: #d14}.codehilite .sx{color: #d14}.codehilite .sr{color: #009926}.codehilite .s1{color: #d14}.codehilite .ss{color: #990073}.codehilite .bp{color: #999999}.codehilite .vc{color: #008080}.codehilite .vg{color: #008080}.codehilite .vi{color: #008080}.codehilite .il{color: #009999}
+    </style>
+    <style type="text/css">
+      .markdown-body hr{background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAYAAAAECAYAAACtBE5DAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBNYWNpbnRvc2giIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OENDRjNBN0E2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OENDRjNBN0I2NTZBMTFFMEI3QjRBODM4NzJDMjlGNDgiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo4Q0NGM0E3ODY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo4Q0NGM0E3OTY1NkExMUUwQjdCNEE4Mzg3MkMyOUY0OCIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PqqezsUAAAAfSURBVHjaYmRABcYwBiM2QSA4y4hNEKYDQxAEAAIMAHNGAzhkPOlYAAAAAElFTkSuQmCC")}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div id="markup">
+        <article id="content" class="markdown-body">
+          <h1>Chapter 7. Predicate Logic</h1>
+
+<h2>Definition 15</h2>
+
+<p>Any term in the form $F(x)$, where $F$ is a predicate name and
+$x$ is a variable name, is a well-formed formula. Similarly, $F(x_1, x_2, ..., x_k)$ is a
+well-formed formula; this is a predicate containing $k$ variables.</p>
+
+<h2>Universes</h2>
+
+<p>The universe of discourse, often simply called the universe or abbreviated
+$U$, is the set of possible values that the variables can have. Usually the universe
+is specified just once, at the beginning of a piece of logical reasoning, but this
+specification cannot be omitted.</p>
+
+<p>The universe is called $U$, and its constants are written as
+lower-case letters, typically $c$ and $p$ (to suggest a constant value, or a particular
+value). Variables are also lower-case letters, typically $x, y, z$. Predicates are
+upper-case letters $F, G, H, ....$ For example, $F(x)$ is a valid expression in the
+language of predicate logic, and its intuitive meaning is ‘the variable $x$ has the
+property $F$’. Generic expressions are written with a lower-case predicate; for
+example $f(x)$ could stand for any predicate $f$ applied to a variable $x$.</p>
+
+<h2>Quantifiers</h2>
+
+<p>There are two quantifiers in predicate logic; these are the special symbols $∀$
+and $∃$.</p>
+
+<h2>Definition 16</h2>
+
+<p>If $F(x)$ is a well-formed formula containing the variable $x$,
+then $∀x$. $F(x)$ is a well-formed formula called a universal quantification. This
+is a statement that everything in the universe has a certain property: ‘For all
+$x$ in the universe, the predicate $F(x)$ holds’. An alternative reading is
+‘Every $x$ has the property $F$’.
+Universal quantifications are often used to state required properties. For
+example, if you want to say formally that a computer program will give the
+correct output for all inputs, you would use $∀$. The upside-down A symbol is
+intended to remind you of <em>All</em>.</p>
+
+<h2>Definition 17</h2>
+
+<p>If $F(x)$ is a well-formed formula containing the variable $x$, then
+$∃x$. $F(x)$ is a well-formed formula called an existential quantification. This is a
+statement that something in the universe has a certain property: ‘There exists
+an $x$ in the universe for which the predicate $F(x)$ holds’. An alternative reading
+is ‘Some $x$ has the property $F$’.</p>
+
+<p>Existential quantifications are used to state properties that must occur at
+least once. For example, we might want to state that a database contains
+a record for a certain person; this would be done with $∃$. The backwards E
+symbol is reminiscent of <em>Exists</em>.</p>
+
+<h2>Expanding Quantified Expressions</h2>
+
+<p>If the universe is finite (or if the variables are restricted to a finite set), ex-
+pressions with quantifiers can be interpreted as ordinary terms in propositional
+logic. Suppose $U = \{c_1, c_2, ..., c_n \}$, where the size of the universe is n. Then
+quantified expressions can be expanded as follows:</p>
+
+<p>$$
+\begin{align}
+∀x. F(x) = F(c_1) ∧ F(c_2) ∧ ··· ∧ F(c_n) \\
+∃x. F(x) = F(c_1) ∨ F(c_2) ∨ ··· ∨ F(c_n)
+\end{align}
+$$</p>
+
+<p>With a finite universe, therefore, the quantifiers are just syntactic abbreviations.</p>
+
+<p>If the variables are not restricted to a finite set, it is impossible even in
+principle to expand a quantified expression. It may be intuitively clear to write
+$F(c_1) ∧ F(c_2) ∧ F(c_3) ∧ ···$, but this is not a well-formed formula</p>
+
+<h2>Example 4</h2>
+
+<p>Let the universe $U = \{1,2,3\}$, and define the predicates <em>even</em> and off as follows:</p>
+
+<p>$$
+\begin{align}
+\text{even } x ≡ (x \text{ mod } 2 = 0) \\
+\text{odd }  x ≡ (x \text{ mod } 2 = 1)
+\end{align}
+$$</p>
+
+<p>Two quantified expressions will be expanded and evaluated using these definitions:</p>
+
+<pre><code>∀x. (even x → ¬(odd x))
+    = (even 1 → ¬(odd 1)) ∧ (even 2 → ¬(odd 2)) ∧ (even 3 → ¬(odd 3))
+    = (False → ¬True) ∧ (True → ¬False) ∧ (False → ¬False)
+    = True ∧ True ∧ True
+    = True
+∃x. (even x ∧ odd x)
+    = (even 1 ∧ odd 1) ∨ (even 2 ∧ odd 2) ∨ (even 3 ∧ odd 3)
+    = (False  ∧ True)  ∨ (True   ∧ False) ∨ (False  ∧ True)
+    = False ∨ False ∨ False
+    = False
+</code></pre>
+
+<h2>Example 5</h2>
+
+<p>Let $S = \{0,2,4,6\}$ and $R = \{0,1,2,3\}$. Then we can state
+that every element $S$ is twice some element of R as follows:</p>
+
+<p>$$
+∀x ∈ S. ∃y ∈ R. x = 2 × y
+$$</p>
+
+<p>First expand the <em>outer</em> quantifier</p>
+
+<p>$$
+\begin{align}
+   &amp; (∃y ∈ R. 0 = 2 × y) \\
+∧ &amp; (∃y ∈ R. 2 = 2 × y) \\
+∧ &amp; (∃y ∈ R. 4 = 2 × y) \\
+∧ &amp; (∃y ∈ R. 6 = 2 × y)
+\end{align}
+$$</p>
+
+<p>The expand all four of the remaining quantifiers</p>
+
+<p>$$
+\begin{align}
+   &amp; ((0 = 2 × 0) ∨ (0 = 2 × 1) ∨ (0 = 2 × 2) ∨ (0 = 2 × 3)) \\
+∧ &amp; ((2 = 2 × 0) ∨ (2 = 2 × 1) ∨ (2 = 2 × 2) ∨ (2 = 2 × 3)) \\
+∧ &amp; ((4 = 2 × 0) ∨ (4 = 2 × 1) ∨ (4 = 2 × 2) ∨ (4 = 2 × 3)) \\
+∧ &amp; ((6 = 2 × 0) ∨ (6 = 2 × 1) ∨ (6 = 2 × 2) ∨ (6 = 2 × 3))
+\end{align}
+$$</p>
+
+<h2>Exercise 1</h2>
+
+<p>Let the universe $U = \{ 1,2,3 \}$. Expand the following expressions
+into propositional term (i.e., remove the quantifiers)</p>
+
+<p>(a) $∀x. F(x)$</p>
+
+<p>$$
+\begin{align}
+  &amp; ∀x. F(x) \\
+= &amp; F(1) ∧ F(2) ∧ F(3)
+\end{align}
+$$</p>
+
+<p>(b) $∃x. F(x)$</p>
+
+<p>$$
+\begin{align}
+  &amp; ∃x. F(x) \\
+= &amp; F(1) ∨ F(2) ∨ F(3)
+\end{align}
+$$</p>
+
+<p>(c) $∃x. ∀y. G(x,y)$</p>
+
+<p>$$
+\begin{align}
+   &amp; (G(1, 1) ∧ G(1,2) ∧ G(1,3)) \\
+∨ &amp; (G(2, 1) ∧ G(2,2) ∧ G(2,3)) \\
+∨ &amp; (G(3, 1) ∧ G(3,2) ∧ G(3,3)) \\
+\end{align}
+$$</p>
+
+<h2>Exercise 2</h2>
+
+<p>Let the universe be set of integers. Expand the following expression:
+$∀x ∈ \{1,2,3,4\}.\ ∃y ∈ \{5,6\}.\ F(x,y)$</p>
+
+<p>$$
+\begin{align}
+   &amp; (F(1,5) ∨ F(1,6)) \\
+∧ &amp; (F(2,5) ∨ F(2,6)) \\
+∧ &amp; (F(3,5) ∨ F(3,6)) \\
+∧ &amp; (F(4,5) ∨ F(4,6)) \\
+\end{align}
+$$</p>
+
+<h1>7.1.4 The Scope of Variable Bindings</h1>
+
+<p>Quantifiers <em>bind</em> variables by giving them values from the universe.
+If a variable $x$ appears with no quantification, it assumed to be any
+arbitrary element of the universe, and the author should&#39;ve told you what
+that universe is.</p>
+
+<p>The extent of a variable binding is called its <em>scope</em>. The scope is the
+expression that appears right after the binding. For example, the scope of
+$x$ in $∀x. F(x)$ is the subexpression $F(x)$.</p>
+
+<p>Use parentheses for readability.
+The expression $∀x. p(x) ∨ q(x)$ can be read in two different ways. Either</p>
+
+<p>$$
+∀x. (p(x) ∨ q(x))
+$$
+or
+$$
+(∀x. p(x)) ∨ q(x)
+$$</p>
+
+<p>There is a convention though. The scope of a variable binding is the <em>smallest possible</em>, if no
+parentheses are given. So above, the second interpretation would be correct.</p>
+
+<p>Also, we can reuse quantifiers to make expressions more readable, e.g.
+$$
+∀x. ∀y. F(x,y) = ∀x,y. F(x,y)
+$$
+Also works with set restrictions, e.g.
+$$
+∀x,y,z ∈ S. F(x,y,z) = ∀x ∈ S. ∀y ∈ S. ∀z ∈ S. F(x,y,z)
+$$</p>
+
+<h1>7.1.5 Translating Between English and Logic</h1>
+
+<h2>Example 6</h2>
+
+<p>Consider the translation of the sentence &quot;Some birds can fly&quot; into logic.
+Let the universe be a set that contains all birds (it is all right if it
+contains other tings too, such as frogs and other animals). Let $B(x)$ mean
+&quot;x is a bird&quot; and $F(x)$ mean &quot;$x$ can fly&quot;. Then &quot;Some birds can fly&quot; is translated as
+$$
+∃x. B(x) ∧ F(x)
+$$</p>
+
+<p><em>Warning!</em> A common pitfall is to translate &quot;Some birds can fly&quot; as
+$$
+∃x. B(x) → F(x) \quad\quad\quad \textit{Wrong translation!}
+$$</p>
+
+<p>Because, let $p$ be a frog that somehow got into the universe.
+Now $B(p)$ is false, so $B(p) → F(p)$ is true, (remember,
+$\mathtt{False} → \mathtt{False} = \mathtt{True}$).
+This is just saying that &quot;If that frog were a bird then it would be able to fly&quot;,
+which is true; it doesn&#39;t mean the frog is actually a bird, or that it
+can actually fly. However, we have now found a value of $x$ -- namely the frog $p$ --
+for which the proposition is true, and that is enough to satisy the predicate,
+even if all birds in the universe happen to be penguins (which cannot fly).</p>
+
+<h2>Exercise 3</h2>
+
+<p>Express the following statements formally, using the universe of natural numbers,
+and the predicates $E(x) ≡ x \text{ is even}$ and $O(x) ≡ x \text{ is odd}$</p>
+
+<ul>
+<li>There is an even number
+
+<ul>
+<li>$∃x. E(x)$</li>
+</ul></li>
+<li>Every number is either even or odd
+
+<ul>
+<li>$∀x. (E(x) ∨ O(x))$</li>
+</ul></li>
+<li>No number is both even and odd
+
+<ul>
+<li>$∀x. ¬(E(x) ∧ O(x))$</li>
+</ul></li>
+<li>The sum of two odd numbers is even
+
+<ul>
+<li>$∀x, y. ((O(x) ∧ O(y)) → E(x + y))$</li>
+</ul></li>
+<li>The sum of an odd number and an even number is odd.
+
+<ul>
+<li>$∀x, y. ((O(x) ∧ E(y)) → O(x + y))$</li>
+</ul></li>
+</ul>
+
+<h2>Exercise 4</h2>
+
+<p>Let the universe be the set of all animals, and define the following predicates:
+$$
+\begin{align}
+B(x)    &amp; ≡ x \text{ is a bird }\\
+D(x)    &amp; ≡ x \text{ is a dove }\\
+C(x)    &amp; ≡ x \text{ is a chicken }\\
+P(x)    &amp; ≡ x \text{ is a pig }\\
+F(x)    &amp; ≡ x \text{ can fly }\\
+W(x)    &amp; ≡ x \text{ has wings }\\
+M(x, y) &amp; ≡ x \text{ has more feathers than } y \text{ does}
+\end{align}
+$$</p>
+
+<p>Translate the following sentences into logic. There are generally several
+correct answers. Some of the English sentences are fairly close to logic,
+while others require more interpretation before they can be rendered in logic.</p>
+
+<ul>
+<li>Chickens are birds.
+
+<ul>
+<li>$∀x. (C(x) → B(x))$</li>
+</ul></li>
+<li>Some doves can fly.
+
+<ul>
+<li>$∃x. (D(x) ∧ F(x))$</li>
+</ul></li>
+<li>Pigs are not birds
+
+<ul>
+<li>$∀x. (P(x) → ¬B(x))$</li>
+</ul></li>
+<li>Some birds can fly, and some can&#39;t.
+
+<ul>
+<li>$(∃x. (B(x) ∧ F(x))) ∧ (∃x. (B(x) ∧ ¬F(x)))$</li>
+</ul></li>
+<li>An animal needs wings in order to fly
+
+<ul>
+<li>$∀x. (F(x) → W(x))$</li>
+</ul></li>
+<li>If a chicken can fly, then pigs have wings
+
+<ul>
+<li>$(∃x. (C(x) ∧ F(x)) → (∀y. P(y) → W(y))) $</li>
+</ul></li>
+<li>Chickens have more feathers than pigs do
+
+<ul>
+<li>$∀x, y. (C(x) ∧ P(y)) → M(x,y)$</li>
+</ul></li>
+<li>An animal with more theaters than any chicken can fly
+
+<ul>
+<li>$∀x. \left((∃y. (C(y) ∧ M(x, y))) → F(x)\right)$</li>
+</ul></li>
+</ul>
+
+<h2>Exercise 5</h2>
+
+<p>Translate the following into English.</p>
+
+<ul>
+<li>$∀x. (∃y. \text{wantsToDanceWith} (x,y))$
+
+<ul>
+<li>For all $x$, someone wants to dance with $x$</li>
+</ul></li>
+<li>$∃x. (∀y. \text{wantsToPhone}(y,x))$
+
+<ul>
+<li>For some $x$, every $y$ wants to phone x</li>
+</ul></li>
+<li>$∃x. (\text{tired } (x) ∧ ∀y. \text{helpsMoveHouse }(x,y))$
+
+<ul>
+<li>For some $x$, $x$ is tired and will help all $y$s move house</li>
+</ul></li>
+</ul>
+
+<h1>7.2 Computing with Quantifiers</h1>
+
+<p>You can use Haskell to compute with quantifiers (kind of)!
+Predicates are simply functions that return <code>Bool</code>, just like in math!</p>
+
+<p>The function <code>forall</code> takes a list numbers and a predicate, and applies
+the predicate to each value in the universe and returns the conjuction
+of theresults.</p>
+
+<pre lang="haskell"><code>forall :: [Int] -&gt; (Int -&gt; Bool) -&gt; Bool
+forall xs f = all $ map f xs
+</code></pre>
+
+<h2>Exercise 6</h2>
+
+<p>Write the predicate logic expressions corresponding to the following
+Haskell expressions. Then decide whether the value is <code>True</code> or <code>False</code>,
+and evaluate using the computer. Note that <code>(== 2)</code> is a function that takes
+a number and compares it with 2, while <code>(&lt; 4)</code> is a function that takes a number
+and returns <code>True</code> if it is less than 4.</p>
+
+<pre><code>forall [1,2,3] (==2)
+</code></pre>
+
+<p>$$
+∀x ∈ \{1,2,3\}. x = 2
+$$</p>
+
+<pre><code>  forall [1,2,3] (==2)
+= (1 == 2) /\ (2 == 2) /\ (3 == 2)
+= False    /\ True     /\ False
+= False
+
+forall [1,2,3] (&lt; 4)
+</code></pre>
+
+<p>$$
+∀x ∈ \{1,2,3 \}. x &lt; 4
+$$</p>
+
+<pre><code>  forall [1,2,3] (&lt; 4)
+= (1 &lt; 4) /\ (2 &lt; 4) /\ (3 &lt; 4)
+= True    /\ True    /\ True
+= True
+</code></pre>
+
+<p>Like <code>forall</code>, the function <code>exists</code> applies its second argument to all of the
+elements in its first argument:</p>
+
+<pre lang="haskell"><code>exists :: [Int] -&gt; (Int -&gt; Bool) -&gt; Bool
+</code></pre>
+
+<p>However, <code>exists</code> forms the disjunction of the result.</p>
+
+<pre lang="haskell"><code>exists xs f = any $ map f xs
+</code></pre>
+
+<h2>Exercise 7</h2>
+
+<p>Again, rewrite the following in predicate logic, work out the values by hand
+and evaluate on the computer:</p>
+
+<pre><code>  exists [0,1,2] (== 2)
+= (0 == 2) \/ (1 == 2) \/ (2 == 2)
+= False    \/ False    \/ True
+= True
+</code></pre>
+
+<p>$$
+    ∃x ∈ \{0,1,2\}. x = 2
+$$</p>
+
+<pre><code>  exists [1,2,3]  (&gt; 5)
+= (1 &gt; 5) \/ (2 &gt; 5) \/ (3 &gt; 5)
+= False   \/ False   \/ False
+= False
+</code></pre>
+
+<p>$$
+    ∃x ∈ \{1,2,3\}. x &gt; 5
+$$</p>
+
+<p>These functions can be nested in the same way as quantifiers can be nested in predicate logic.</p>
+
+<h2>Example 7</h2>
+
+<p>$∀x ∈ \{1,2\}. (∃y ∈ \{1,2\}. x = y)$ has an inner assertion that can be implemented
+as follows:</p>
+
+<pre lang="haskell"><code>inner_fun :: Int -&gt; Bool
+inner_fum x = exists [1,2] (== x)
+</code></pre>
+
+<p>Now consider the evaluation of:</p>
+
+<pre><code>forall [1,2] inner_fun
+</code></pre>
+
+<p>The evaluation can be calculated step by step. The function <code>and</code> takes a list of
+Boolean values and combines them all using the $∧$ operation:</p>
+
+<pre><code>  forall [1,2] inner_fun
+= and [inner_fun 1, inner_fun 2]
+= and [exists [1,2] (== 1),
+       exists [1,2] (== 2)]
+= and [or [1==1, 2==1],
+       or [1==2, 2==2]]
+= and [True, True]
+= True
+</code></pre>
+
+<h2>Exercise 8</h2>
+
+<p>Define the predicate $p(x,y)$ to mean $x = y + 1$, and let the universe be
+$\{1,2\}$. Calculate the value of each of the following expressions,
+and then check your solution using Haskell.</p>
+
+<p>(a) $∀x. (∃y. p(x,y))$
+$$
+\begin{align}
+     &amp; ((1 = 1 + 1) ∨ (1 = 2 + 1)) \\
+  ∧ &amp; ((2 = 1 + 1) ∨ (2 = 2 + 1)) \\
+  =  &amp; \\
+     &amp; (\mathtt{False} ∨ \mathtt{False}) \\
+  ∧ &amp; (\mathtt{True}  ∨ \mathtt{False}) \\
+  =  &amp; \\
+     &amp; \mathtt{False} ∧ \mathtt{True} \\
+  =  &amp; \mathtt{False}
+\end{align}
+$$</p>
+
+<p>(b) $∃x,y. p(x,y)$
+$$
+\begin{align}
+  &amp; ((1 = 1 + 1) ∨ (1 = 2 + 1)) ∨ ((2 = 1 + 1) ∨ (2 = 2 + 1)) \\
+= &amp; (\mathtt{False} ∨ \mathtt{False}) ∨ (\mathtt{True} ∨ \mathtt{False}) \\
+= &amp; \mathtt{True}
+\end{align}
+$$</p>
+
+<p>(c) $∃x. (∀y. p(x,y))$</p>
+
+<p>$$
+\begin{align}
+  &amp; ((1 = 1 + 1) ∧ (1 = 2 + 1)) ∨ ((2 = 1 + 1) ∧ (2 = 2 + 1)) \\
+= &amp; (\mathtt{False} ∧ \mathtt{False}) ∨ (\mathtt{True} ∧ \mathtt{False}) \\
+= &amp; \mathtt{False} ∨ \mathtt{False} \\
+= &amp; \mathtt{False}
+\end{align}
+$$</p>
+
+<p>(d) $∀x,y. p(x,y)$</p>
+
+<p>$$
+\begin{align}
+  &amp; ((1 = 1 + 1) ∧ (1 = 2 + 1)) ∧ ((2 = 1 + 1) ∧ (2 = 2 + 1)) \\
+= &amp; (\mathtt{False} ∧ \mathtt{False}) ∧ (\mathtt{True} ∧ \mathtt{False}) \\
+= &amp; \mathtt{False} ∧ \mathtt{False} \\
+= &amp; \mathtt{False}
+\end{align}
+$$</p>
+
+<h1>7.3 Logical Inference with Predicates</h1>
+
+<p>The inference rules for propositional logic can be extended to handle predicate
+logic as well. Four additional rules are required: an introduction
+rule and an elimination rule for both of the quantifiers $∀$ and $∃$.</p>
+
+<p>Since the $∀$ quantifier is related to $∧$, and $∃$ is a generaliztion of $∨$,
+there is a similartiy when inferring the quantifiers to their respective operators.
+If the universe is finite, then predicate logic is, in principle not even necessary,
+but mere shortcuts for the expanded statements.
+$$
+\begin{align}
+\dfrac{
+    F(x) \quad\quad \{x \text{ arbitrary} \}
+} {∀x. F(x)} {\scriptstyle \{ ∀I \}}
+\quad\quad
+\dfrac{
+    ∀x. F(x)
+} {F(p)} {\scriptstyle \{ ∀E \}} \\ \\ \hline \\
+\dfrac{
+    F(p)<br>
+}{∃x. F(x)} {\scriptstyle \{ ∃I \}}
+\quad\quad
+\dfrac{
+    ∃x. F(x) \quad
+    F(x) ⊢ A \quad
+    \{x \text{ not free in } A \}
+} {A} {\scriptstyle \{ ∃ E\}}
+\end{align}
+$$
+We will always assume that the universe is non-empty. This is especially
+important with the rule for forall elimination, which is invalid when the universe
+of discourse is empty. Also, in the rule for exists elimination, the conclusion of
+the rule (which is also the conclusion of the sequent in the hypothesis of the
+rule) must be a proposition that does not depend in any way on the parameter
+of the universe of discourse. That is, the proposition A in the statement of the
+rule must not be a predicate that depends on x.</p>
+
+<h1>7.3.1 Universal Introduction $\{∀I\}$</h1>
+
+<p>Quite standard techinique, which is used often in math and CS, is to state and prove
+a property about an arbitrary element of the universe, $x$, and then generalize this proof
+to <em>all</em> elements of the universe.
+E.g. this theorem about Haskell lists, which says there are two equivalent ways to 
+append a singleton $x$ in front of a list $xs$. The definition of <code>(++)</code> is</p>
+
+<pre><code>(++) :: [a] -&gt; [a] -&gt; [a]
+[] ++ ys = ys
+(x:xs) ++ ys = x : (xs ++ ys)
+</code></pre>
+
+<h2>Thereom 57</h2>
+
+<p>Let $x :: a$ and $xs :: [a]$. Then $x : xs = [x] ⧺ xs$</p>
+
+<p>It is important to note that this theorem is stating a property about
+<em>arbitrary x</em> and <em>xs</em>. It really means that the property holds for <em>all</em>
+values of the variables, and this could be stated more formally with an explicit
+quantifier:</p>
+
+<h2>Theorem 58</h2>
+
+<p>$∀x :: a. ∀xs :: [a]. x : xs = [x] ⧺ xs$</p>
+
+<p>These two theorems are exactly the same, except for style - the second is a little more
+formal. The use of <em>arbitrary</em> variables means an implicit $∀$ is meant.
+The following proof works for both theorems:</p>
+
+<p><em>Proof</em>.
+$$
+\begin{align}
+&amp; [] 
+\end{align}
+$$</p>
+        </article>
+      </div>
+    </div>
+  </body>
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+          displayMath: [ ['$$', '$$'], ["\\[", "\\]"] ],
+          processEscapes: true
+        },
+        TeX: {
+          equationNumbers: {
+            autoNumber: 'AMS'
+          }
+        },
+        "HTML-CSS": {
+          imageFont: null
+        }
+      });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.1-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</html>
