@@ -598,3 +598,106 @@ the line of $E(x)$ was based on the assumption $x = 2$, and $x$ appears free in 
 assumption. Furthermore, the assumption was not discharged. Consequently,
 the syntactic requirement for the ${∀I}$ rule has not been satisfied, and the
 inference is not valid.
+
+7.3.2 Universal Elimination
+===========================
+If you have established $∀x.F(x)$, then you can infer $F(p)$
+if $p$ is an element of the universe.
+
+$$
+\dfrac{
+    ∀x.F(x)
+}{F(p)} {\scriptstyle \\{ ∀E \\}}
+$$
+
+The following theorem allows you to apply a universel implication
+in the form $∀x.F(x) → G(x)$, to a particular proposition $F(p)$,
+and its proof illustrates the $\\{ ∀ E\\}$ inference rule.
+
+Theorem 60
+----------
+$F(p), ∀x. F(x) → G(x) ⊢ G(p)$
+
+$$
+\dfrac{
+    \dfrac{}{F(p)}
+    \quad
+    \dfrac{
+        ∀x. F(x) → G(x)
+    } {F(p) → G(p)} {\scriptstyle \\{ ∀E \\}}
+}{G(p)} {\scriptstyle \\{ → E \\}}
+$$
+
+In chapter 6 the implication chain theorem was proved
+($a → b, b → c ⊢ a → c$). The $\\{ ∀I }$ inference rule
+can be used to prove the corresponding theorem on universal
+implications: from $∀x. F(x) → G(x)$ and $∀x. G(x) → H(x)$,
+you can infer $∀x. F(x) → H(x)$. However, first we have to establish
+that for an arbitrary $p$ in the universe, $F(p) → H(p)$,
+and the proof of that proposition requires using the $\\{ ∀ E\\}$
+rule twice to prove the particular propositions
+$F(p) → G(p)$ and $G(p) → H(p)$.
+
+Theorem 61
+----------
+$∀x. F(x) → G(x), ∀x. G(x) → H(x) ⊢ ∀x. F(x) → H(x)$
+
+*Proof*.
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            ∀x. F(x) → G(x)
+        }{F(p) → G(p)}     {\scriptstyle \\{ ∀ E \\}}
+        \quad
+        \dfrac{
+            ∀x. G(x) → H(x)
+        }{G(p) → H(p)}     {\scriptstyle \\{ ∀ E \\}}
+    }{F(p) → H(p)}         {\scriptstyle \\{ \text{impl. chain} \\}}
+}{∀x. F(x) → H(x)}         {\scriptstyle \\{ ∀ I \\}}
+$$
+
+The following theorem says that you can change the order in
+which the variables are bound in $∀x. ∀y. F(x,y)$. This theorem
+is simple but extremely important.
+
+Theorem 62
+----------
+$∀x. ∀y. F(x,y) ⊢ ∀y. ∀x. F(x,y)$
+
+*Proof*.
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            \dfrac{
+                ∀x. ∀y. F(x,y)
+            }{∀y. F(x,y)}       {\scriptstyle \\{ ∀ E \\}}
+        } {F(x,y)}              {\scriptstyle \\{ ∀ E \\}}
+    } {∀x. F(x,y)}              {\scriptstyle \\{ ∀ I \\}}
+}{∀y. ∀x. F(x,y)}               {\scriptstyle \\{ ∀ I \\}}
+$$
+
+This theorem says that if, for all $x$, a proposition $P$
+implies $f(x)$, then $P$ implies $∀x. f(x)$. This allows you
+to pull a proposition $P$, which does not use $x$, out of
+an implication bound $∀$.
+
+Theorem 63
+----------
+$∀x. P → f(x) ⊢ P → ∀x. f(x)$
+
+*Proof*.
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            \dfrac{}{\boxed{P}}
+            \quad
+            \dfrac{
+                ∀x. P → f(x)
+            }{P → f(x)} {\scriptstyle \\{ ∀ E \\}}
+        }{f(x)}         {\scriptstyle \\{ → E \\}}
+    }{∀x. f(x)}         {\scriptstyle \\{ ∀ I \\}}
+}{P → ∀x. f(x)}         {\scriptstyle \\{ → I \\}}
+$$
