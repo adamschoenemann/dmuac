@@ -701,3 +701,203 @@ $$
     }{∀x. f(x)}         {\scriptstyle \\{ ∀ I \\}}
 }{P → ∀x. f(x)}         {\scriptstyle \\{ → I \\}}
 $$
+
+Exercise 9
+----------
+Prove $∀x. F(x), ∀x. F(x) → G(x) ⊢ ∀x. G(x)$
+
+*Proof*.
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            ∀x. F(x)
+        }{F(p)} {\scriptstyle \\{ ∀ E \\}}
+        \quad
+        \dfrac{
+            ∀x. F(x) → G(x)
+        }{F(p) → G(p)} {\scriptstyle \\{ ∀ E \\}}
+    } {G(p)} {\scriptstyle \\{ → E \\}}
+    \quad
+    \dfrac{}{\\{p \text{ is arbitrary}\\}}
+}{∀x. G(x)} {\scriptstyle \\{ ∀ I \\}}
+$$
+
+7.3.3 Existential Introduction
+==============================
+The $\\{ ∃ I \\}$ rule say that if $f(p)$ has been established for a particular
+$p$, then you can infer $∃x. f(x)$, which makes sense intuitively.
+
+$$
+\boxed{
+    \dfrac{
+        f(p)
+    }{∃x. f(x)} {\scriptstyle \\{ ∃ I \\}}
+}
+$$
+
+The following theorem says that if $F(x)$ holds for all elements of the universe,
+then it must hold for one of them. Recall that we require the universe of discourse
+to be non-empty; otherwise this theorem would not hold.
+
+Theorem 64
+----------
+$∀x. F(x) ⊢ ∃x. F(x)$
+
+*Proof*.
+$$
+\dfrac{
+    \dfrac{
+        ∀x. F(x)
+    }{F(x)} {\scriptstyle \\{ ∀ E \\}}
+}{∃x. F(x)} {\scriptstyle \\{ ∃ I \\}}
+$$
+
+7.3.4 Existential Elimination
+=============================
+This is related to the $\\{ ∨ E \\}$ rule, that says if you know
+$a ∨ b$ and you know that $c$ can be inferred from either $a$ or $b$,
+then you can infer $c$.
+If the universe is finite, then $∃x. F(p)$ is like saying
+$F(p_1) ∨ F(p_2) ... ∨ F(p_i)$.
+Following these informations, we can extend the $\\{ ∨ E \\}$ rule
+so that if we know $F(p_i)$ and $A$ must hold if $F(x)$ holds for an
+*arbitrary* $x$, then we can infer $A$.
+The $∃ E$ rule expresses this. Furthermore, it can be used on infinite
+universe, whereas repeated applications of $∨E$ cannot, because a 
+proof *must have finite length*.
+
+$$
+\boxed{
+    \dfrac{
+        ∃x. F(x)
+        \quad
+        F(p) ⊢ A
+        \quad
+        \\{p \text{ is arbitrary}\\}
+    }{A} {\scriptstyle \\{ ∃ E \\}}
+}
+$$
+
+The following theorem is an example. It say that if $P(x)$ always
+implies $Q(x)$, and also that $P(x)$ holds for some $x$, then $Q(x)$
+also holds for some $x$.
+
+Theorem 65
+----------
+$∃x. P(x), ∀x. P(x) → Q(x) ⊢ ∃x. Q(x)$
+
+*Proof*.
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{}{∃x. P(x)}
+        \quad
+        \dfrac{
+            \boxed{\dfrac{}{P(c)}}
+            \quad
+            \dfrac{
+                ∀x. P(x) → Q(x)
+            } {P(c) → Q(c)} {\scriptstyle \\{ ∀ E \\}}
+        } {Q(c)} {\scriptstyle \\{ → E \\}}
+    } {Q(c)} {\scriptstyle \\{ ∃ E \\}}
+}{∃x. Q(x)} {\scriptstyle \\{ ∃ I \\}}
+$$
+
+The following theorem says that a $∀$ directly inside an $∃$ can be
+brought outside the $∃$.
+
+Theorem 66
+----------
+$∃x. ∀y. F(x,y) ⊢ ∀y. ∃x. F(x,y)$
+
+*Proof*.
+$$
+\dfrac{
+    \dfrac{}{∃x. ∀y. F(x,y)}
+    \quad
+    \dfrac{
+        \dfrac{
+            \dfrac{
+                \boxed{∀y. F(p,y)}
+            } {F(p,q)}          {\scriptstyle \\{ ∀ E \\}}
+        } {∃x. F(x,q)}          {\scriptstyle \\{ ∃ I \\}}
+    } {∀y. ∃x. F(x,y)}          {\scriptstyle \\{ ∀ I \\}}
+}{∀y. ∃x. F(x,y)}               {\scriptstyle \\{ ∃ E \\}}
+$$
+
+So, basically we say that:
+
+1. We know that $∃x. ∀y. F(x,y)$
+    - If we can prove hypothesis $A$ assuming $∀y. F(p,y)$, and $p$ is arbitrary,
+      then we're good.
+2. So we prove $A$, which is $∀y. ∃x. F(x,y)$
+    1. we introduce the universal quantification, and sub $q$ in for $y$,
+       to remove the $∀y$. Now $q$ is also arbitrary
+    2. we introduce the existential quantification, by assuming
+       $F(p,q)$, where $p$ is arbitrary.
+    3. This we can do, because the $∃E$ rules introduces the temporary assumption
+       $∀y. F(p,y)$
+       
+Exercise 10
+-----------
+Prove that $∃x. ∃y. F(x,y) ⊢ ∃y. ∃x. F(x,y)$
+
+$$
+\dfrac{
+    \dfrac{}{∃x. ∃y. F(x,y)}
+    \quad
+    \dfrac{
+        \dfrac{
+            \boxed{\dfrac{}{∃y. F(p, y)}}
+            \quad
+            \dfrac{
+                \boxed{F(p, q)}
+            } {∃x. F(x, q)} {\scriptstyle \\{ ∃ I\\}}
+        }{∃x. F(x, q)}      {\scriptstyle \\{ ∃ E\\}}
+    } {∃y. ∃x. F(x,y)}      {\scriptstyle \\{ ∃ I\\}}
+}{∃y. ∃x. F(x,y)}           {\scriptstyle \\{ ∃ E\\}}
+$$
+
+Exercise 11
+-----------
+The converse of Theorem 66 is the following:
+
+$$
+∀y. ∃x. F(x,y) ⊢ ∃x. ∀y. F(x,y) \quad\quad \textbf{WRONG!}
+$$
+
+Give a counterexample that demonstrates that this statement is *not* valid.
+
+Well, if $F(x,y) ≡ x \text{ wantsToDanceWith } y$,
+and you know that there is some $x$ that wants to dance with *all* $y$s,
+then you can also be sure that all $y$s, has some $x$ that wants to dance with it,
+since we know that at least this one $x$ will dance with anyone!
+
+On the other hand, if you know that for all $y$s, there is some $x$ who wants
+to dance with it, you cannot conclude that this necessarily means that there is an
+$x$ that wants to dance with everyone.
+
+Exercise 12
+-----------
+Prove $∀x.(F(x) ∧ G(x)) ⊢ (∀x. F(x)) ∧ (∀x.G(x))$
+
+$$
+\dfrac{
+    \dfrac{
+        \dfrac{
+            \dfrac{
+                ∀x. (F(x) ∧ G(x))
+            } {F(p) ∧ G(p)}    {\scriptstyle \\{ ∀ E \\}}
+        } {F(p)}               {\scriptstyle \\{ ∧ E_L \\}}
+    }{∀x. F(x)}                {\scriptstyle \\{ ∀ I \\}}
+    \quad
+    \dfrac{
+        \dfrac{
+            \dfrac{
+                ∀x. (F(x) ∧ G(x))
+            } {F(q) ∧ G(q)}    {\scriptstyle \\{ ∀ E \\}}
+        } {G(q)}               {\scriptstyle \\{ ∧ E_R \\}}
+    }{∀x. G(x)}                {\scriptstyle \\{ ∀ I \\}}
+}{(∀x. F(x)) ∧ (∀x.G(x))}      {\scriptstyle \\{ ∧ I \\}}
+$$
