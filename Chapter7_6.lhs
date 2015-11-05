@@ -148,11 +148,16 @@ $$
 → ∀x. (f(x) ∨ g(x) → h(x))
 $$
     
-!!!TODO:!!
 $$
 \begin{align}
 & (∀x. f(x) → h(x) ∧ ∀x. g(x) → h(x)) & \\\
 & = ∀x. (f(x) → h(x) ∧ g(x) → h(x))     & \\{7.11\\} \\\
+& = ∀x. (¬f(x) ∨ h(x)) ∧ (¬g(x) ∨ h(x)) & \\{\text{implication twice} \\} \\\
+& = ∀x. (h(x) ∨ ¬f(x)) ∧ (h(x) ∨ ¬g(x)) & \\{ ∧ \text{ commutes} \\} \\\
+& = ∀x. (h(x) ∨ (¬f(x) ∧ ¬g(x)))        & \\{ ∨ \text{ over } ∧ \\} \\\
+& = ∀x. (h(x) ∨ ¬(f(x) ∨ g(x)))         & \\{ \text{DeMorgans 2.} \\} \\\
+& = ∀x. (¬(f(x) ∨ g(x)) ∨ h(x))         & \\{ ∨ \text{ commutes} \\} \\\
+& = ∀x. (f(x) ∨ g(x) → h(x))            & \\{ \text{implication} \\}
 \end{align}
 $$
 
