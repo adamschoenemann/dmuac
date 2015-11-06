@@ -163,16 +163,21 @@ $$
 
 Exercise 19
 -----------
-Define a predicate (with the natural numbers 0,1,2,... as its universe)
+Define a predicate (with the natural numbers $0,1,2,...$ as its universe)
 that expresses the notion that all of the elements that occur in either
-of the sequences supplied as operands to the append operator (⧺) also
+of the sequences supplied as operands to the append operator `++` also
 occur as elements of the sequence it delivers. That is, the predicate states
 that under certain constraints on the number of elements in the sequence
 `xs`, any element that occurs in either the sequence `xs` or the sequence
 `ys` also occurs in the sequence `xs ++ ys`. Hint: Take
-"x *occurs in* xs" to mean 
-`∃.y ∃ys. (xs = (y : ys) ∧ (x = y) ∨ (x occurs in ys))`.
-That is, the proposition "x occurs in xs" always has the same value as the
-proposition `∃.y ∃ys. (xs = (y : ys) ∧ (x = y) ∨ (x occurs in ys))`.
-Denote the predicate "x occurs in xs" by the forumate "x ∈ xs" (overloading
+"$x$ *occurs in* $xs$" to mean 
+`∃y. ∃ys. (xs = (y : ys) ∧ (x = y) ∨ (x occurs in ys))`.
+That is, the proposition "$x$ occurs in $xs$" always has the same value as the
+proposition `∃y. ∃ys. (xs = (y : ys) ∧ (x = y) ∨ (x occurs in ys))`.
+Denote the predicate "$x$ occurs in $xs$" by the formula "$x ∈ xs$" (overloading
 the ∈ symbol used to denote set membership)
+
+If $xs$ and $ys$ are finite lists.
+$$
+F(n) ≡ (length xs = n) → ∀z. (((z ∈ xs) ∨ (z ∈ ys)) → (z ∈ (xs ⧺ ys))
+$$
