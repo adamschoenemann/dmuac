@@ -64,3 +64,18 @@ $$
 \bigcap\limits{i ∈ I} A_i & = \\{x\ |\ ∀i ∈ I . x ∈ A_i\\}
 \end{align}
 $$
+
+Definition 23
+-------------
+For ant two sets $A$ and $B$, if $A ∩ B = ∅$ then $A$ and $B$ are disjoint sets.
+
+Exercise 1
+----------
+Given the sets $A = \\{1,2,3,4,5\\}$ and $B = \\{2,4,6\\}$, calculate the
+following sets:
+
+(a): $A ∪ (B ∩ c) = A ∪ \\{2,4\\} = A$  
+(b): $(A ∩ B) ∪ B = \\{2,4\\} ∪ B = B$
+(c): $A - B = \\{1,3,5\\}$
+(d): $(B - A) ∩ B = \\{6\\} ∩ B = \\{6\\}$
+(e): $A ∪ (B - A) = A ∪ \\{6\\} = \\{1,2,3,4,5,6\\}$
