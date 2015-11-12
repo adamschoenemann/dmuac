@@ -140,7 +140,14 @@ are ordered, while sets are unordered.
 
 8.3.1 Computing with Sets
 
+First an import, to use `sort`
+
 > import Data.List (sort)
+
+Now create the constructor. This constructor should be *private*.
+Sets should be constructed from lists using the `fromList` smart constructor
+defined below.
+
 > newtype Set a = Set [a]
 
 A Show instance
@@ -156,6 +163,11 @@ A Eq instance
 
 > instance (Eq a, Ord a) => Eq (Set a) where
 >   (Set x) == (Set y) = (sort . deduplicate) x == (sort . deduplicate) y
+
+An Ord instance
+
+> instance (Ord a) => Ord (Set a) where
+>   compare (Set xs) (Set ys) = compare xs ys
 
 Some helpers to ensure that any set is de-duplicated.
 
@@ -202,4 +214,33 @@ And some queries
 
 And the powerset function
 
-> powerset :: (Eq a, Ord a) => Set a -> Set a
+> -- first a helper on lists
+> powerlist :: [a] -> [[a]]
+> powerlist []    = [[]]
+> powerlist [x]   = [[], [x]]
+> powerlist [x,y] = [[], [x], [y], [x, y]]
+> powerlist (x:xs) = concat $ map (\z -> [z, x:z]) (powerlist xs)
+
+
+    An example of applying the powerlist function by hand
+      powerlist [1,2,3]
+    = concat $ map (\z -> [z, 1:z]) (powerlist [2,3])
+    = concat $ map (\z -> [z, 1:z]) [[], [2], [3], [2,3]]
+    = concat $ (\z -> [z, 1:z]) [] : map (\z -> [z, 1:z]) [[2], [3], [2,3]]
+    = concat $ [[], [1]] : (\z -> [z, 1:z]) [2] : map (\z -> [z, 1:z]) [[3], [2,3]]
+    = concat $ [[], [1]] : [[2], [1,2]] : [[3], [1,3]] : [[2,3], [1,2,3]] : []
+    = concat $ [[], [1]] : [[2], [1,2]] : [[3], [1,3]] : [[[2,3], [1,2,3]]]
+    = concat $ [[], [1]] : [[2], [1,2]] : [[[3], [1,3]], [[2,3], [1,2,3]]]
+    = concat $ [[], [1]] : [[[2], [1,2]], [[3], [1,3]], [[2,3], [1,2,3]]]
+    = concat $ [[[], [1]], [[2], [1,2]], [[3], [1,3]], [[2,3], [1,2,3]]]
+    = [[], [1], [2], [1,2], [3], [1,3], [2,3], [1,2,3]]
+
+
+> -- just uses powerlist under the hood
+> powerset :: (Eq a, Ord a) => Set a -> Set (Set a)
+> powerset (Set xs) = Set $ map (Set) $ powerlist xs
+
+Finally, the crossproduct of a set
+
+> crossproduct :: Set a -> Set b -> Set (a,b)
+> crossproduct (Set a) (Set b) = Set [(x,y) | x <- a, y <- b]
