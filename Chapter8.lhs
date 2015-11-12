@@ -74,11 +74,11 @@ Exercise 1
 Given the sets $A = \\{1,2,3,4,5\\}$ and $B = \\{2,4,6\\}$, calculate the
 following sets:
 
-(a): $A ∪ (B ∩ c) = A ∪ \\{2,4\\} = A$  
-(b): $(A ∩ B) ∪ B = \\{2,4\\} ∪ B = B$  
-(c): $A - B = \\{1,3,5\\}$  
-(d): $(B - A) ∩ B = \\{6\\} ∩ B = \\{6\\}$  
-(e): $A ∪ (B - A) = A ∪ \\{6\\} = \\{1,2,3,4,5,6\\}$  
+(a): $A ∪ (B ∩ c) = A ∪ \\{2,4\\} = A$
+(b): $(A ∩ B) ∪ B = \\{2,4\\} ∪ B = B$
+(c): $A - B = \\{1,3,5\\}$
+(d): $(B - A) ∩ B = \\{6\\} ∩ B = \\{6\\}$
+(e): $A ∪ (B - A) = A ∪ \\{6\\} = \\{1,2,3,4,5,6\\}$
 
 8.2.3 Complement and Power
 ==========================
@@ -133,3 +133,73 @@ In Haskell, things that exhibit equality are instances of the `Eq` typeclass.
         (==) :: a -> a -> Bool
         (/=) :: a -> a -> Bool
         (/=) = not . (==)
+
+We can implement sets using lists in Haskell, but lists and sets differ
+in two important aspecs: 1) lists can contain duplicates and 2) lists
+are ordered, while sets are unordered.
+
+8.3.1 Computing with Sets
+
+> import Data.List (sort)
+> newtype Set a = Set [a]
+
+A Show instance
+
+> instance Show a => Show (Set a) where
+>   show (Set []) = "{}"
+>   show (Set xs) = "{" ++ show' xs ++ "}" where
+>       show' []  = ""
+>       show' [x] = show x
+>       show' (x:xs) = show x ++ ", " ++ show' xs
+
+A Eq instance
+
+> instance (Eq a, Ord a) => Eq (Set a) where
+>   (Set x) == (Set y) = (sort . deduplicate) x == (sort . deduplicate) y
+
+Some helpers to ensure that any set is de-duplicated.
+
+> deduplicate :: Eq a => [a] -> [a]
+> deduplicate xs = dedup xs [] where
+>   dedup []     res = res
+>   dedup (x:xs) res = if x `elem` res
+>                            then dedup xs res
+>                            else dedup xs (res ++ [x])
+
+And constructors
+
+> fromList :: (Ord a, Eq a) => [a] -> Set a
+> fromList xs = Set ((sort . deduplicate) xs)
+
+And some operators
+
+> union :: (Eq a, Ord a) => Set a -> Set a -> Set a
+> union (Set xs) (Set ys) = fromList (xs ++ ys)
+
+> (+++) :: (Eq a, Ord a) => Set a -> Set a -> Set a
+> (+++) = union
+
+> intersection :: (Eq a, Ord a) => Set a -> Set a -> Set a
+> intersection (Set xs) (Set ys) = fromList $ filter pred (xs ++ ys)
+>   where pred x = x `elem` xs && x `elem` ys
+
+> (***) :: (Eq a, Ord a) => Set a -> Set a -> Set a
+> (***) = intersection
+
+> difference :: (Eq a, Ord a) => Set a -> Set a -> Set a
+> difference (Set xs) (Set ys) = fromList [x | x <- xs, not $ x `elem` ys]
+
+> (~~~) :: (Eq a, Ord a) => Set a -> Set a -> Set a
+> (~~~) = difference
+
+And some queries
+
+> subset :: (Eq a) => Set a -> Set a -> Bool
+> subset (Set xs) (Set ys) = all (`elem` ys) xs
+
+> properSubset :: (Eq a) => Set a -> Set a -> Bool
+> properSubset a@(Set xs) b@(Set ys) = not (xs == ys) && subset a b
+
+And the powerset function
+
+> powerset :: (Eq a, Ord a) => Set a -> Set a
