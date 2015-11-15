@@ -267,23 +267,23 @@ Exercise 2
 Work out the values of the following set expressions, and then
 check your answer using the Haskell expression that folows.
 
-a. `[1,2,3] +++ [3] == [1,2,3]`
-b. `[4,2] +++ [2,4] == [4,2]`
-c. `[1,2,3] *** [3] == [3]`
-d. `[] *** [1,3,5]  == []`
-e. `[1,2,3] ~~~ [3] == [1,2]`
-f. `[2,3] ~~~ [1,2,3] == []`
-g. `[1,2,3] *** [1,2] == [1,2]`
-h. `[1,2,3] +++ [4,5,6] == [1,2,3,4,5,6]`
-i. `([4,3] ~~~ [4,5]) *** [1,2] == [3] *** [1,2] == []`
-j. `([3,2,4] +++ [4,2]) ~~~ [2,3]`
-k. `subset [3,4] [4,5,6] == False`
-l. `subset [1,3] [4,1,3,6] == True`
-m. `subset [] [1,2,3] == True`
-n. `setEq [1,2] [2,1] == True`
-o. `setEq [3,4,6] [2,3,5] == False`
-p. `[1,2,3] ~~~ [1] == [2,3]`
-q. `[] ~~~ [1,2] == []`
+a. `[1,2,3] +++ [3] == [1,2,3]`  
+b. `[4,2] +++ [2,4] == [4,2]`  
+c. `[1,2,3] *** [3] == [3]`  
+d. `[] *** [1,3,5]  == []`  
+e. `[1,2,3] ~~~ [3] == [1,2]`  
+f. `[2,3] ~~~ [1,2,3] == []`  
+g. `[1,2,3] *** [1,2] == [1,2]`  
+h. `[1,2,3] +++ [4,5,6] == [1,2,3,4,5,6]`  
+i. `([4,3] ~~~ [4,5]) *** [1,2] == [3] *** [1,2] == []`  
+j. `([3,2,4] +++ [4,2]) ~~~ [2,3]`  
+k. `subset [3,4] [4,5,6] == False`  
+l. `subset [1,3] [4,1,3,6] == True`  
+m. `subset [] [1,2,3] == True`  
+n. `setEq [1,2] [2,1] == True`  
+o. `setEq [3,4,6] [2,3,5] == False`  
+p. `[1,2,3] ~~~ [1] == [2,3]`  
+q. `[] ~~~ [1,2] == []`  
 
 Exercise 3
 ----------
@@ -395,28 +395,320 @@ $$
 \end{align}
 $$
 
-In general we know that $A ⊆ C$, and we also know that $A ⊂ B$ and $B ⊂ C$
-and that $A ≠ B$ and $B ≠ C$.
+We know that $A ≠ B ↔ ¬(A ⊆ B ∧ B ⊆ A)$
+and $B ≠ C ↔ ¬(B ⊆ C ∧ C ⊆ B)$.
 
-Now, can we prove that $C ⊆ A$ is impossible?
+Since we also know that $a ⊂ b → a ⊆ b$, we know that
+$A ⊆ B$ and $B ⊆ C$.
+Furthermore, we know that $a, ¬(a ∧ b) ⊢ ¬b$, so we can infer
+that $¬(C ⊆ B)$ and $¬(B ⊆ A)$.
+If $C$ is not subset-or-equal to $B$, and $B$ is not subset-or-equal
+to $A$, then $A$ cannot be subset-or-equal-to $C$.
 
-We know that if $a ⊂ b$ then $b ⊄ a$.
-This means that $∃x. x ∈ A ∧ x ∉ B$
-And also that   $∃x. x ∈ B ∧ x ∉ C$
-I DONT KNOW!!!!
 
-We need a new inference rule that says if $a ⊂ b$ then $¬(b ⊂ a)$, i.e.
-$a ⊂ b ⊢ ¬(b ⊂ a)$
+And thus, we know that $A ≠ C$, and $A ⊆ C$, so $A ⊂ C$. Q.E.D.
+
+
+Exercise 12
+-----------
+Consider the following two claims. For each one, if it is true
+give a proof, but if it is false give a counter-example.
+
+(a). If $A ⊆ B$ and $B ⊆ C$, then $A ⊂ C$.  
+Not true. Counterexample:
+
+If $A = \\{ 1, 2\\}$ and $B = \\{1,2\\}$ and $C = \\{1,2\\}$,
+then $A ⊆ B$ and $B ⊆ C$ but $A ⊄ B$
+
+(b). if $A ⊂ B$ and $B ⊂ C$, then $A ⊆ C$
+True. Proof:
 
 $$
 \begin{align}
-  & a ⊂ b & \\\
-= & a ⊆ b ∧ ¬(a ⊆ b ∧ b ⊆ a)   & \\{ \text{Def.}  ⊂\\} \\\
-= & ¬(b ⊆ a)                   & \\{ a ∧ ¬(a ∧ b) = ¬b\\}
+1. & A ⊆ B ∧ A ≠ B & \\{\text{Premise}\\} \\\
+2. & A ⊆ B          & \\{ ∧ E_L \\} \\\
+3. & B ⊆ C ∧ B ≠ C & \\{\text{Premise}\\} \\\
+4. & B ⊆ C          & \\{ ∧ E_L \\} \\\
+5. & x ∈ A → x ∈ B  & \\{\text{Def.} ⊆ \\} \\\
+6. & x ∈ B → x ∈ C  & \\{\text{Def.} ⊆ \\} \\\
+7. & x ∈ A → x ∈ C & \\{\text{Implication}\\} \\\
+8. & ∀x. (x ∈ A → x ∈ C) & \\{ ∀I \\} \\\
+9. & A ⊆ C          & \\{\text{Def.} ⊆ \\}
 \end{align}
 $$
 
-Since this means that $b$ is NOT equal ot OR a subset $a$, then we can
-infer that $¬(b ⊆ a) = ¬(b ⊂ a)$
 
-Now we now know that $A ⊂ B = ¬(B ⊂ A)$.
+8.4.1 Associative and Commutative Set Operations
+================================================
+The set union and intersection operators and commutative and associative.
+
+Theorem 69
+----------
+For all sets $A,B$ and $C$,
+
+1. $A ∪ B = B ∪ A$
+2. $A ∩ B = B ∩ A$
+3. $A ∪ (B ∪ C) = (A ∪ B) ∪ C$
+4. $A ∩ (B ∩ C) = (A ∩ B) ∩ C$
+5. $A - B = A ∩ B'$
+
+
+*Proof*. We prove the second equation. Let $x$ be any element of
+$U$, Then each line i nthe proof below is logically equivalent
+$↔$ to the following line:
+
+$$
+\begin{align}
+1. & x ∈ A ∩ B     & \\{ Premise \\} \\\
+2. & x ∈ A ∧ x ∈ B & \\{ \text{Def.} ∩ \\} \\\
+3. & x ∈ B ∧ x ∈ A & \\{ \text{Comm.} ∩ \\} \\\
+4. & x ∈ B ∩ A     & \\{ \text{Def.} ∩ \\} \\\
+5. & ∀x ∈ U. x ∈ A ∩ B ↔ x ∈ B ∩ A & \\{ ∀I \\} \\\
+6. & A ∩ B = B ∩ A & \\{ \text{Def. set equality} \\}
+\end{align}
+$$
+
+8.4.2 Distributive Laws
+=======================
+The following theorem states that the union and intersection
+operators distribute over each other.
+
+Theorem 70
+----------
+$A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)$
+*Proof*. Let $x$ be an arbitrary element of the universe $U$.
+Then the following expressions are equivalent ($↔$):
+
+$$
+\begin{align}
+1. & A ∩ (B ∪ C)                         & \\{\text{Premise}\\} \\\
+2. & x ∈ A ∧ (x ∈ B ∨ x ∈ C)             & \\{\text{Def.} ∪, ∩\\} \\\
+3. & (x ∈ A ∧ x ∈ B) ∨ (x ∈ A ∨ x ∈ C)   & \\{ ∧ \text{ over } ∨ \\} \\\
+4. & x ∈ (A ∩ B) ∪ (A ∩ C)               & \\{\text{Def.} ∪, ∩\\} \\\
+5. & ∀x ∈ U. x ∈ A ∩ (B ∪ C) ↔ x ∈ (A ∩ B) ∪ (A ∩ C) & \\{ ∀ I \\} \\\
+6. & A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)       & \\{\text{Def.} set equality \\}
+\end{align}
+$$
+
+Theorem 71
+----------
+$A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C)$
+
+*Proof*.
+
+$$
+\begin{align}
+1. & A ∪ (B ∩ C)                         & \\{\text{Premise}\\} \\\
+2. & x ∈ A ∨ (x ∈ B ∧ x ∈ C)             & \\{\text{Def.} ∩, ∪\\} \\\
+3. & (x ∈ A ∨ x ∈ B) ∧ (x ∈ A ∧ x ∈ C)   & \\{ ∨ \text{ over } ∧ \\} \\\
+4. & x ∈ (A ∪ B) ∩ (A ∪ C)               & \\{\text{Def.} ∩, ∪\\} \\\
+5. & ∀x ∈ U. x ∈ A ∪ (B ∩ C) ↔ x ∈ (A ∪ B) ∩ (A ∪ C) & \\{ ∀ I \\} \\\
+6. & A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C)       & \\{\text{Def.} set equality \\}
+\end{align}
+$$
+
+8.4.3 DeMorgan's Laws for Sets
+==============================
+
+Theorem 72
+----------
+Let $A$ and $B$ be arbitrary sets. Then
+$$
+(A ∪ B)' = A' ∩ B'
+$$
+and
+$$
+(A ∩ B)' = A' ∪ B'
+$$
+
+*Proof*. We prove that $(A ∪ B)' = A' ∩ B'$. Let $x$ be any element
+of $U$. Then the following lines are equivalent:
+
+$$
+\begin{align}
+1.  & x ∈ (A ∪ B)'                   & \\{\text{Premise} \\} \\\
+2.  & x ∈ U ∧ ¬(x ∈ A ∪ B)           & \\{\text{Def. comp} \\} \\\
+3.  & x ∈ U ∧ ¬(x ∈ A ∨ x ∈ B)       & \\{\text{Def.} ∪ \\} \\\
+4.  & x ∈ U ∧ (¬(x ∈ A) ∧ ¬(x ∈ B))  & \\{\text{DeMorgan} \\} \\\
+5.  & x ∈ U ∧ x ∈ U ∧ (¬(x ∈ A) ∧ ¬(x ∈ B)) & \\{\text{Idemp. of ∧}\\} \\\
+6.  & (x ∈ U ∧ ¬(x ∈ A)) ∧ (x ∈ U ∧ ¬(x ∈ B)) & \\{\text{Comm. of ∧}\\} \\\
+7.  & x ∈ U - A ∧ x ∈ U - B          & \\{\text{Def. of diff.} \\} \\\
+8.  & x ∈ (U - A) ∩ (U - B)          & \\{\text{Def.} ∪ \\} \\\
+9.  & (x ∈ A' ∧ B')                  & \\{\text{Def. of comp.} \\} \\\
+10. & ∀x. x ∈ (A ∪ B)' ↔ x ∈ (A' ∧ B') & \\{ ∀ \text{ introduction} \\} \\\
+11. & (A ∪ B)' = A' ∩ B'
+\end{align}
+$$
+
+8.7 Review Exercises
+====================
+
+Exercise 13
+-----------
+For the following questions, give a proof using set laws,
+or find a counterexample.
+
+(a) $(A' ∪ B)' ∩ C' = A ∩ (B ∪ C)'$  
+$$
+\begin{align}
+1. & (A' ∪ B)' ∩ C' & \\\
+2. & A'' ∩ B' ∩ C'  & \\{ \text{DeMorgan} \\} \\\
+3. & A ∩ B' ∩ C'    & \\{ \text{Double complement} \\} \\\
+4. & A ∩ (B' ∩ C')  & \\{ ∩ \text{ assoc} \\} \\\
+5. & A ∩ (B ∪ C)'   & \\{ \text{DeMorgan}\\}
+\end{align}
+$$
+
+(b) $A − (B ∪ C)' = A ∩ (B ∪ C)$  
+
+$$
+\begin{align}
+1. & A - (B ∪ C)'                       & \\\
+2. & A ∩ ((B ∪ C)')'    & \\{\text{Theorem 69.5}\\} \\\
+3. & A ∩ (B ∪ C)        & \\{\text{Double complement}\\}
+\end{align}
+$$
+
+
+(c) $(A ∩ B) ∪ (A ∩ B') = A$  
+
+$$
+\begin{align}
+1. & (A ∩ B) ∪ (A ∩ B') & \\\
+2. & A ∩ (B ∪ B')       & \\{ ∩ \text{ over } ∪ \\}  \\\
+3. & A ∩ U              & \\{ a ∪ a' = U \\} \\\
+4. & A                  & \\{ ∩ \text{ identity } \\} \\\
+\end{align}
+$$
+
+(d) $A ∪ (B − A) = A ∪ B$  
+
+$$
+\begin{align}
+1. A ∪ (B - A)         & \\\
+2. A ∪ (B ∩ A')        & \\{\text{Theorem 69.5}\\} \\\
+4. (A ∪ B) ∩ (A ∪ A')  & \\{ ∪ \text{ over } ∩\\} \\\
+5. (A ∪ B) ∩ U         & \\{a ∪ a' = U \\}  \\\
+6. A ∪ B               & \\{ ∩ \text{domination} \\}
+\end{align}
+$$
+
+(e) $A − B = B' − A'$  
+
+$$
+\begin{align}
+1. & A - B         & \\\
+2. & A ∩ B'        & \\{\text{Theorem 69.5}\\} \\\
+3. & ((A ∩ B')')'  & \\{\text{Double neg} \\} \\\
+4. & (A' ∪ B'')'   & \\{\text{DeMorgan}\\} \\\
+5. & (B'' ∪ A')'   & \\{ ∪ \text{ commutes}\\} \\\
+6. & B''' ∩ A''    & \\{\text{DeMorgan}\\} \\\
+7. & B''' - A'     & \\{\text{Theorem 69.5}\\} \\\
+8. & B' - A'       & \\{\text{Double neg} \\}
+\end{align}
+$$
+
+(f) $A ∩ (B − C) = (A ∩ B) − (A ∩ C)$  
+
+$$
+\begin{align}
+1. & A ∩ (B - C)                & \\\
+2. & A ∩ (B ∩ C')               & \\{\text{Theorem 69.5}\\} \\\
+3. & A ∩ ((B ∩ C')')'           &
+4. & A ∩ (B' ∪ C'')'            &
+5. & A - (B' ∪ C'')             &
+6. & x ∈ A ∧ (x ∉ B' ∨ x ∉ C'') & 
+7. & (x ∈ A ∧ x ∉ B') ∨ (x ∈ A ∧ x ∉ C'')
+8. & 
+
+
+3. & x ∈ A ∧ (x ∈ B ∧ x ∈ C')   & \\{\text{Def.} ∧ \\} \\\
+4. & (x ∈ A ∧ x ∈ B) ∧ x ∈ C')  & \\{ ∧ \text{ assoc}\\} \\\
+5. & (x ∈ A ∧ x ∈ B) ∧ (x ∈ A ∧ x ∈ C')
+\end{align}
+$$
+
+
+(g) $A − (B ∪ C) = (A − B) ∩ (A − C)$  
+(h) $A ∩ (A' ∪ B) = A ∩ B$  
+(i) $(A − B') ∪ (A − C') = A ∩ (B ∩ C)$  
+
+Exercise 14
+-----------
+The function
+
+    smaller :: Ord a => a -> [a] -> Bool
+
+takes a value and a list of values and returns `True` if the
+value is smaller than the first element in the list. Using this
+function, write a function that takes a set and returns its
+powerset. Use `foldr`.
+
+Exercise 15
+-----------
+Prove that $(A ∪ B)' = ((A ∪ A') ∩ A') ∩ ((B ∩ B') ∩ B')$
+
+Exercise 16
+-----------
+Using a list comprehension, write a function that takes two sets
+and returns `True` if the first is a subset of the other.
+
+Exercise 17
+-----------
+What is wrong with this definition of `diff`, a function that
+takes two sets and returns their difference?
+
+    diff :: Eq a => [a] -> [a] -> [a]
+    diff set1 set2 [e | e <- set2, not (elem e set1)]
+
+Exercise 18
+-----------
+What is wrong with this definition of `intersection`,
+a function that takes two sets and returns their intersection?
+
+    intersection :: [a] -> [a] -> [a]
+    intersection seta set2 = [e | e <- set1, e <- set2]
+
+Exercise 19
+-----------
+Write a function using a list comprehension that takes
+two sets and returns their union.
+
+Exercise 20
+-----------
+Is it ever the case that $A ∪ (B - C) = B$
+
+Exercise 21
+-----------
+Give an example in which $(A ∪ C) ∩ (B ∪ C) = Ø$
+
+Exercise 22
+-----------
+Prove the commutative law of set-intersection, $A ∩ B = B ∩ A$.
+
+Exercise 23
+-----------
+Express the commutative law of set-intersection in terms of the
+set operations and Boolean operations defiend in the `Stdm` module.
+
+Exercise 24
+-----------
+Prove the associative law of set-union, $(A ∪ B) ∪ C = A ∪ (B ∪ C)$
+
+Exercise 25
+-----------
+Prove that the difference between two sets is the intersection of
+one with the complement of the other, which can be written as
+$A - B = A ∩ B'$.
+
+Exercise 26
+-----------
+Prove that union distributs over intersection.
+$$
+A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C)
+$$
+
+Exercise 27
+-----------
+Prove DeMorgan's law for the set intersection,
+$(A ∩ B)' = A' ∪ B'$
