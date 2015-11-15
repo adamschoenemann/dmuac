@@ -1,6 +1,8 @@
 8. Set Theory
 =============
 
+> import Test.QuickCheck
+
 Definition 18 (Subset)
 ----------------------
 Let $A$ and $B$ be sets. Then $A ⊆ B$ if and only if
@@ -609,23 +611,28 @@ $$
 $$
 
 (f) $A ∩ (B − C) = (A ∩ B) − (A ∩ C)$  
+Not true! Example!
+$$
+A = {1,2}, B = {3,4}, C = {3,5,6}
+A ∩ (B - C) = A ∩ {4} = {}
+(A ∪ B) - (A ∪ C) = {1,2,3,4} - {1,2,3,5,6} = {4}
+$$
+
+> f a' b' c' =
+>    let a = fromList a'
+>        b = fromList b'
+>        c = fromList c'
+>    in  a *** (b ~~~ c) == (a *** b) ~~~ (a *** c)
+> 
+
 
 $$
 \begin{align}
-1. & A ∩ (B - C)                & \\\
-2. & A ∩ (B ∩ C')               & \\{\text{Theorem 69.5}\\} \\\
-3. & A ∩ ((B ∩ C')')'           &
-4. & A ∩ (B' ∪ C'')'            &
-5. & A - (B' ∪ C'')             &
-6. & x ∈ A ∧ (x ∉ B' ∨ x ∉ C'') & 
-7. & (x ∈ A ∧ x ∉ B') ∨ (x ∈ A ∧ x ∉ C'')
-8. & 
-
-
-3. & x ∈ A ∧ (x ∈ B ∧ x ∈ C')   & \\{\text{Def.} ∧ \\} \\\
-4. & (x ∈ A ∧ x ∈ B) ∧ x ∈ C')  & \\{ ∧ \text{ assoc}\\} \\\
-5. & (x ∈ A ∧ x ∈ B) ∧ (x ∈ A ∧ x ∈ C')
-\end{align}
+1. & A ∩ (B - C)                          & \\\
+2. & A ∩ (B ∩ C')                         & \\{\text{Theorem 69.5}\\} \\\
+3. & (A ∩ B) ∩ C'                         & \\{\text{ ∩ assoc } \\} \\\
+4. & (A ∩ B) - C                          & \\{\text{Theorem 69.5}\\} \\\
+5. & (A ∩ B) - 
 $$
 
 
