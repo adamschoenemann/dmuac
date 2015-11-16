@@ -1,6 +1,7 @@
 8. Set Theory
 =============
 
+> {-# LANGUAGE FlexibleInstances #-}
 > import Test.QuickCheck
 
 Definition 18 (Subset)
@@ -188,6 +189,18 @@ An Ord instance
 > instance (Ord a) => Ord (Set a) where
 >   compare (Set xs) (Set ys) = compare xs ys
 
+Define a universe we will use for this chapter's purposes
+
+> _U = Set [-100..100]
+
+An Arbitrary instance for testing (Ints only)
+
+> instance Arbitrary (Set Int) where
+>    arbitrary = do
+>       n <- choose (0, 100)
+>       xs <- vectorOf n (choose (-100,100))
+>       return $ fromList xs
+
 Some helpers to ensure that any set is de-duplicated.
 
 > deduplicate :: Eq a => [a] -> [a]
@@ -222,6 +235,11 @@ And some operators
 
 > (~~~) :: (Eq a, Ord a) => Set a -> Set a -> Set a
 > (~~~) = difference
+
+cmpl requires the universe to be known, so is quite restricted
+
+> cmpl :: Set Int -> Set Int
+> cmpl x = _U ~~~ x
 
 And some queries
 
@@ -587,11 +605,11 @@ $$
 
 $$
 \begin{align}
-1. A ∪ (B - A)         & \\\
-2. A ∪ (B ∩ A')        & \\{\text{Theorem 69.5}\\} \\\
-4. (A ∪ B) ∩ (A ∪ A')  & \\{ ∪ \text{ over } ∩\\} \\\
-5. (A ∪ B) ∩ U         & \\{a ∪ a' = U \\}  \\\
-6. A ∪ B               & \\{ ∩ \text{domination} \\}
+1. & A ∪ (B - A)         & \\\
+2. & A ∪ (B ∩ A')        & \\{\text{Theorem 69.5}\\} \\\
+4. & (A ∪ B) ∩ (A ∪ A')  & \\{ ∪ \text{ over } ∩\\} \\\
+5. & (A ∪ B) ∩ U         & \\{a ∪ a' = U \\}  \\\
+6. & A ∪ B               & \\{ ∩ \text{domination} \\}
 \end{align}
 $$
 
@@ -611,45 +629,78 @@ $$
 $$
 
 (f) $A ∩ (B − C) = (A ∩ B) − (A ∩ C)$  
-Not true! Example!
-$$
-A = {1,2}, B = {3,4}, C = {3,5,6}
-A ∩ (B - C) = A ∩ {4} = {}
-(A ∪ B) - (A ∪ C) = {1,2,3,4} - {1,2,3,5,6} = {4}
-$$
-
-> f a' b' c' =
->    let a = fromList a'
->        b = fromList b'
->        c = fromList c'
->    in  a *** (b ~~~ c) == (a *** b) ~~~ (a *** c)
-> 
-
 
 $$
 \begin{align}
-1. & A ∩ (B - C)                          & \\\
-2. & A ∩ (B ∩ C')                         & \\{\text{Theorem 69.5}\\} \\\
-3. & (A ∩ B) ∩ C'                         & \\{\text{ ∩ assoc } \\} \\\
-4. & (A ∩ B) - C                          & \\{\text{Theorem 69.5}\\} \\\
-5. & (A ∩ B) - 
+  & A ∩ (B - C)                 & \\\
+= & A ∩ (B ∩ C')                & \text{Def. minus} \\\
+= & Ø ∪ A ∩ (B ∩ C')            & \text{∪ identity} \\\
+= & (Ø ∩ B) ∪ (A ∩ B ∩ C')      & \text{∩ domination} \\\
+= & (A ∩ A' ∩ B) ∪ (A ∩ B ∩ C') & \text{a ∩ a = Ø} \\\
+= & ((A ∩ B) ∩ A') ∪ ((A ∩ B) ∩ C') & \text{∩ commute and assoc} \\\
+= & (A ∩ B) ∩ (A' ∪ C')         & \text{∩ over ∪} \\\
+= & (A ∩ B) ∩ (A' ∪ C')''       & \text{Double neg.} \\\
+= & (A ∩ B) ∩ (A'' ∩ C'')'      & \text{DeMorgan} \\\
+= & (A ∩ B) ∩ (A ∩ C)'          & \text{Double neg.} \\\
+= & (A ∩ B) - (A ∩ C)           & \text{Def. minus}
+\end{align}
 $$
 
-
 (g) $A − (B ∪ C) = (A − B) ∩ (A − C)$  
+
+$$
+\begin{align}
+  & (A - B) ∩ (A - C)        & \\\
+= & (A ∩ B') ∩ (A ∩ C')      & \text{Def. -} \\\
+= & (A ∩ A) ∩ (B' ∩ C')      & \text{∩ assoc} \\\
+= & A ∩ (B' ∩ C')            & \text{∩ idempotent} \\\
+= & A ∩ (B' ∩ C')''          & \text{Double neg.} \\\
+= & A ∩ (B ∪ C)'             & \text{DeMorgan} \\\
+= & A - (B ∪ C)              & \text{Def. -}
+\end{align}
+$$
+
 (h) $A ∩ (A' ∪ B) = A ∩ B$  
+
+$$
+\begin{align}
+  & A ∩ (A' ∪ B)         & \\\
+= & (A ∩ A') ∪ (A ∩ B)   & \text{∩ over ∪} \\\
+= & Ø ∪ (A ∪ B)          & a ∩ a' = Ø \\\
+= & A ∪ B                & \text{∪ identity}
+\end{align}
+$$
+
 (i) $(A − B') ∪ (A − C') = A ∩ (B ∩ C)$  
+
+$$
+\begin{align}
+  & (A - B') ∪ (A - C')         & \\\
+= & (A ∩ B'') ∪ (A - C'')       & \text{Def. -} \\\
+= & (A ∩ B) ∪ (A ∩ C)           & \text{Double neg.}\\\
+= & A ∩ (B ∪ C)                 & \text{∩ over ∪}
+\end{align}
+$$
 
 Exercise 14
 -----------
 The function
 
-    smaller :: Ord a => a -> [a] -> Bool
+> smaller :: Ord a => a -> [a] -> Bool
+> smaller x [] = True
+> smaller x (y:ys) = x < y
 
 takes a value and a list of values and returns `True` if the
 value is smaller than the first element in the list. Using this
 function, write a function that takes a set and returns its
 powerset. Use `foldr`.
+
+> powerlist' :: (Ord a, Eq a) => [a] -> [[a]]
+> powerlist' xs = deduplicate $ foldr g [[]] xs where
+>   g x acc =
+>       [x : epset | epset <- acc
+>                  , not (elem x epset) && smaller x epset]
+>       ++ acc
 
 Exercise 15
 -----------
