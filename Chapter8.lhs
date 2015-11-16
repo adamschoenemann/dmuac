@@ -706,10 +706,21 @@ Exercise 15
 -----------
 Prove that $(A ∪ B)' = ((A ∪ A') ∩ A') ∩ ((B ∩ B') ∩ B')$
 
+$$
+\begin{align}
+  & (A ∪ B)'                                & \\\
+= & A' ∩ B'                                 & \text{DeMorgan} \\\
+= & (U ∩ A') ∩ (U ∩ B')                     & \text{∩ identity} \\\
+= & ((A ∪ A') ∩ A') ∩ ((B ∩ B') ∩ B')       & \text{a ∪ a' = U}
+\end{align}
+$$
+
 Exercise 16
 -----------
 Using a list comprehension, write a function that takes two sets
 and returns `True` if the first is a subset of the other.
+
+> isSubset' xs ys = [x | x <- xs, x `elem` ys] == xs
 
 Exercise 17
 -----------
@@ -719,45 +730,93 @@ takes two sets and returns their difference?
     diff :: Eq a => [a] -> [a] -> [a]
     diff set1 set2 [e | e <- set2, not (elem e set1)]
 
+The arguments are switched - set1 is subtracted from set2
+
 Exercise 18
 -----------
 What is wrong with this definition of `intersection`,
 a function that takes two sets and returns their intersection?
 
     intersection :: [a] -> [a] -> [a]
-    intersection seta set2 = [e | e <- set1, e <- set2]
+    intersection set1 set2 = [e | e <- set1, e <- set2]
+
+This will duplicate all elements on set 1, (length set2) times.
+It should be
+
+    intersection :: [a] -> [a] -> [a]
+    intersection set1 set2 = [e | e <- set1, e `elem` set2]
 
 Exercise 19
 -----------
 Write a function using a list comprehension that takes
 two sets and returns their union.
 
+> union' xs ys = [x | x <- deduplicate $ xs ++ ys]
+
 Exercise 20
 -----------
 Is it ever the case that $A ∪ (B - C) = B$
+
+If $A = Ø, C = Ø$ then $A ∪ (B - C) = A ∪ (B - Ø) = A ∪ B = Ø ∪ B = B$
+In any case, if $A ⊆ B$ and $B ⊆ C$
 
 Exercise 21
 -----------
 Give an example in which $(A ∪ C) ∩ (B ∪ C) = Ø$
 
+If $A$ and $B$ are disjoint and $C = Ø$
+$A = \\{1\\}, B = \\{2\\}, C = Ø, (A ∪ C) ∩ (B ∪ C) = \\{1\\} ∩ \\{2\\} = Ø$
+
 Exercise 22
 -----------
 Prove the commutative law of set-intersection, $A ∩ B = B ∩ A$.
+
+$$
+\begin{align}
+  & A ∩ B                   & \\\
+= & x ∈ A ∧ x ∈ B           & \text{Def. ∩} \\\
+= & x ∈ B ∧ x ∈ A           & \text{∧ commutes} \\\
+= & ∀x. x ∈ B ∧ x ∈ A       & \text{∀ I} \\\
+= & B ∩ A                   & \text{Def. ∩}
+\end{align}
+$$
+
 
 Exercise 23
 -----------
 Express the commutative law of set-intersection in terms of the
 set operations and Boolean operations defiend in the `Stdm` module.
 
+> intersectionCommutes a b = a *** b == b *** a
+> -- quickCheck (intersectionCommutes :: (Set Int -> Set Int -> Bool))
+
 Exercise 24
 -----------
 Prove the associative law of set-union, $(A ∪ B) ∪ C = A ∪ (B ∪ C)$
+
+$$
+\begin{align}
+  & (A ∪ B) ∪ C                   & \\\
+= & (x ∈ A ∨ x ∈ B) ∨ x ∈ C       & \text{Def. ∪} \\\
+= & x ∈ A ∨ (x ∈ B ∨ x ∈ C)       & \text{∨ commutes} \\\
+= & A ∪ (B ∪ C)                   & \text{Def. ∪} \\\
+\end{align}
+$$
 
 Exercise 25
 -----------
 Prove that the difference between two sets is the intersection of
 one with the complement of the other, which can be written as
 $A - B = A ∩ B'$.
+
+$$
+\begin{align}
+  & A - B                        & \\\
+= & [x | x ∈ A ∧ x ∉ B]          & \text{Def. -} \\\
+= & [x | x ∈ A ∧ x ∈ (U - B)]    & \text{x ∉ A = x ∈ A'}
+= & A ∩ B'                       & \text{Def. ∩}
+\end{align}
+$$
 
 Exercise 26
 -----------
