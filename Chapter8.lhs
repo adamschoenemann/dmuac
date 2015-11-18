@@ -2,6 +2,7 @@
 =============
 
 > {-# LANGUAGE FlexibleInstances #-}
+> module Chapter8 where
 > import Test.QuickCheck
 
 Definition 18 (Subset)
@@ -214,6 +215,11 @@ And constructors
 
 > fromList :: (Ord a, Eq a) => [a] -> Set a
 > fromList xs = Set ((sort . deduplicate) xs)
+
+And a converter
+
+> toList :: Set a -> [a]
+> toList (Set xs) = xs
 
 And some operators
 
