@@ -562,3 +562,203 @@ Exercise 21
 -----------
 Can we write a function that will take a stream of the naturals (appearing 
 in any order)
+
+Yep.
+
+> indexOf :: [Integer] -> Integer -> Integer
+> indexOf [] _ = -1;
+> indexOf xs e = indexOf' xs e 0 where
+>    indexOf' (x:xs) e n = if x == e then n else indexOf' xs e (n+1)
+
+Exercise 22
+-----------
+Using induction, define the set of roots of a given number $n$.
+
+- Base case: $\sqrt[1]{n} ∈ R$
+- Induction case: $\sqrt[p]{n} ∈ R → \sqrt[p+1]{n} ∈ R$
+- Extremal clause.
+
+Exercise 23
+-----------
+Given the following definition, prove that $n^3$ is in the set $P$ of
+powers of $n$
+
+**Definition 28**  
+Given a number $n$, the set $P$ of powers of $n$ is defined as follows:
+
+- Base case: $n^1 ∈ P$
+- Inductive case: $n^x ∈ P → n^{x+1} ∈ P$
+- Extremal clause.
+
+$$
+\begin{align}
+1. & n^1 ∈ P               & \text{Base case} \\\
+2. & n^1 ∈ P → n^2 ∈ P     & \text{Inductive case applied} \\\
+3. & n^2 ∈ P               & \text{Modus Ponens on 1,2} \\\
+4. & n^2 ∈ P → n^3 ∈ P     & \text{Inductive case applied} \\\
+5. & n^3 ∈ P               & \text{Modus Ponens on 3,4} \\\
+\end{align}
+$$
+
+Exercise 24
+-----------
+When is 0 in the set defined below?
+
+**Definition 29**  
+Given a number $n$, the set $N$ is defined as follows:
+
+- n ∈ N
+- m ∈ N → m - 2 ∈ N
+- Extremal clause.
+
+0 is in the set when $n >= 0$ and $n$ is even. Otherwise not.
+
+Exercise 25
+-----------
+What set is defined by the following definition?
+
+- $1 ∈ S$
+- $n ∈ S ∧ n \textit{ mod } 2 = 0 → n + 1 ∈ S$
+- $n ∈ S ∧ n \textit{ mod } 2 = 1 → n + 2 ∈ S$
+- Extremal clause.
+
+The set of odd naturals.
+
+Exercise 26
+-----------
+Prove that 4 is in the set defined as follows:
+
+- $0 ∈ S$
+- $n ∈ S ∧ n \textit{ mod } 2 = 0 → n + 2 ∈ S$
+- $n ∈ S ∧ n \textit{ mod } 2 = 1 → n + 1 ∈ S$
+- Extremal clause.
+
+The set of even naturals.
+
+Exercise 27
+-----------
+Given the following definition, prove that the string 'yyyy' is in YYS.
+
+1. $"" ∈ YYS$
+2. $s ∈ YYS → "yy" ⧺ s ∈ YYS$
+3. Extremal clause.
+
+*Proof.*  
+
+$$
+\begin{align}
+1. & "" ∈ YYS                          & \text{Base case} \\\
+2. & "" ∈ YYS → "yy" ⧺ "" ∈ YYS       & \text{Induction} \\\
+3. & "yy" ∈ YYS                        & \text{Modus ponens 1,2} \\\
+4. & "yy" ∈ YYS → "yy" ⧺ "yy" ∈ YYS   & \text{Induction} \\\
+5. & "yyyy" ∈ YYS                      & \text{Modus ponens 3,4}
+\end{align}
+$$
+
+Exercise 28
+-----------
+Using data recursion, define the set of strings containg the
+letter 'z'.
+
+> containsZ = builds "z" builder where
+>   builder x = map (:x) ['a'..'z']
+
+Exercise 29
+-----------
+Using induction, define the set of strings of spaces of length less
+than or equal to some positive integer $n$
+
+- $\mathtt{""} ∈ S$
+- $(s ∈ S ∧ \textit{length} s < n) → \text{' '}:s ∈ S$
+- Extremal clause
+
+Exercise 30
+-----------
+Using recursion, define the set of strings of spaces of length less
+than or equal to length $n$, where $n4 is a positive integer
+
+> spacesLte n = if n == 0 then [] else "" : map (' ':) (spacesLte (n-1))
+
+Exercise 31
+-----------
+We could have a set that consists of all the natural numbers except for
+2; you can write this as $N - \\{2\\}$. Similarly, for every natural number
+$x$, there is a set that contains all the natural numbers except for $x$.
+Now, we could make a set $SSN$ of all these results. Write an inductive
+definition of $SSN$.
+
+*First attempt. Wonder if this would work?*  
+- $x ∈ N$
+- $x ∈ N → (N - \\{x\\} ∈ SSN)$
+- Extremal clause
+
+*Second attempt*
+- $N - \\{0\\} ∈ SSN$
+- $N - \\{n\\} ∈ SSN → (N - \\{n+1\\} ∈ SSN)$
+- Extremal clause
+
+Exercise 32
+-----------
+Given the following definition, show that the set $I - \\{-3\\} ∈ SSI-$.  
+The set of sets of integers $SSI-$, each of which is missing a distinct negative
+integer, is defined inductively as follows:
+
+- $I - \\{-1\\} ∈ SSI-$
+- $I - \\{n\\} ∈ SSI- → I - \\{n - 1\\} ∈ SSI-$
+- Extremal clause.
+
+$$
+\begin{align}
+1. & I - \\{-1\\} ∈ SSI-                          & \text{Base case} \\\
+2. & I - \\{-1\\} ∈ SSI- → I - \\{-2\\} ∈ SSI-    & \text{Induction applied to 1} \\\
+3. & I - \\{-2\\} ∈ SSI-                          & \text{Modus Ponens on 1,2} \\\
+4. & I - \\{-2\\} ∈ SSI- → I - \\{-3\\} ∈ SSI-    & \text{Induction applied to 3} \\\
+5. & I - \\{-3\\} ∈ SSI-                          & \text{Modus Ponens on 3,4} \\\
+\end{align}
+$$
+
+Exercise 33
+-----------
+Given the following definition, prove that -7 is in $ONI$. The set $ONI$
+of odd negative integers is defined as follows:
+
+- $-1 ∈ ONI$
+- $n ∈ ONI → (n-2) ∈ ONI$
+- Extremal clause.
+
+$$
+\begin{align}
+1. & -1 ∈ ONI & \\\
+2. & -1 ∈ ONI → -3 ∈ ONI & \\\
+3. & -3 ∈ ONI → -5 ∈ ONI & \\\
+4. & -5 ∈ ONI → -7 ∈ ONI & \\\
+5. & -7 ∈ ONI & \text{Modus Ponens and chain rule}
+\end{align}
+$$
+
+Exercise 34
+-----------
+Using data recursion, define the set `ni` of negative integers
+
+> ni = (-1) : map (\z -> z - 1) ni
+
+Exercise 35
+-----------
+If you print the elements of
+
+    [(a,b) | a <- [0..], b <- [0..]]
+
+Will you ever see the element (1,2)?
+
+Nope, because every combination of (0, $\mathbb{Z+}$) must be evaluated first,
+which will take infinite time.
+
+Exercise 36
+-----------
+What set is given by the following definition?
+
+- $1 ∈ S$
+- $n ∈ S → n - n ∈ S$
+- Extremal clause.
+
+The set will be [1,0,0,0,0,0 ... 0] which is equivalent to $\\{1,0\\}$
