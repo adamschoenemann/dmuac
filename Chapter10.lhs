@@ -11,8 +11,8 @@ A relationship between two objects
 Definition 34
 -------------
 A *binary relation* $R$ with type $R :: A × B$ is a subset of $A × B$,
-where $A$ is the *domain* and $B$ is the *codomain$ of $R$. For $x ∈ A$
-and $y ∈ B$, the notatino $x R y$ means $(x,y) ∈ R$.
+where $A$ is the *domain* and $B$ is the *codomain* of $R$. For $x ∈ A$
+and $y ∈ B$, the notation $x R y$ means $(x,y) ∈ R$.
 
 Example 17
 ----------
@@ -59,8 +59,8 @@ of $R$ is the ordered pair $D = (A,R)$
 
 Example 23
 ----------
-The digraph of the relation $R :: A × A$, where $R = \{(1,2),(2,3)\}$ and 
-$A = \{1,2,3\}$ is $(\{1,2,3\}, \{(1,2),(2,3)\})$
+The digraph of the relation $R :: A × A$, where $R = \\{(1,2),(2,3)\\}$ and
+$A = \\{1,2,3\\}$ is $(\\{1,2,3\\}, \\{(1,2),(2,3)\\})$
 
 Many relations have arcs that are connected to each other in a special way.
 For example, a set of arcs connected in a sequence is called a (directed) path.
@@ -147,18 +147,18 @@ as well as the pairs themselves.
     domain: [1,1,2,2] = {1,2}
     codomain: {3,4}
     relation: {(1,3),(1,4),(2,3),(2,4)}
-    
+
     (b)
     [(a,b) | a <- [1,2,3], b <- [1,2,3], a == b]
     domain: {1,2,3}
     codomain: {1,2,3}
     relation: {(1,1), (2,2), (3,3)}
-    
+
     (c)
     [(a,b) | a <- [1,2,3], b <- [1,2,3], a < b]
     domain: {1,2}
     codomain: {2,3}
-    relation: {(1,2), (1,3), (2,3)}    
+    relation: {(1,2), (1,3), (2,3)}
 
 10.4 Properties of Relations
 ============================
@@ -285,7 +285,7 @@ irreflexive, and then check your conclusion using the respective functions.
     |
     v
     2              3
-        
+
     ([1,2], [(1,2), (2,2), (1,1)])
     -- reflexive
     +--+
@@ -300,14 +300,14 @@ irreflexive, and then check your conclusion using the respective functions.
     2+-+
     ^  |
     +--+
-    
+
     ([1,2], [(2, 1)])
     -- neither
     1
     ^
     |
     2
-    
+
     ([1,2,3], [(1,2), (1,1)])
     -- neither
     1<-+
@@ -333,7 +333,7 @@ and whether it is irreflexive. Justify your conclusions.
     - reflexive, because all numbers are equal to themselves
 - not equal (≠)
     - irreflexive, because no number is not equal to itself
-    
+
 10.4.3 Symmetric Relations
 ==========================
 Some relations have the property that the order of two related objects does not
@@ -353,7 +353,7 @@ properties of an asbtract equality relation is that it must be symmetric.
 
 Example 37
 ----------
-The family relation *IsSiblingOf* is symmetric (Figure 10.4).  
+The family relation *IsSiblingOf* is symmetric (Figure 10.4).
 ![Figure 10.4](./images/fig.10.4.jpg)
 
 Example 38
@@ -402,7 +402,7 @@ The anitsymmetric property is defined formally as follows:
 
 Definition 40
 -------------
-A binary relation $R :: A × A$ is *antisymmetric* if 
+A binary relation $R :: A × A$ is *antisymmetric* if
 
 $$
 ∀x,y ∈ A. ((xRy ∧ yRx) → (x = y))
@@ -453,9 +453,10 @@ We can define the following Haskell functions
 > isSymmetric, isAntisymmetric :: (Ord a) => Digraph a -> Bool
 > isSymmetric (Set xs, Set rel) = and $ map fn rel where
 >    fn (x,y) = (y,x) `elem` rel
-> 
+>
 > isAntisymmetric (Set xs, Set rel) = not $ or $ map fn rel where
 >    fn (x,y) = x /= y && ((y,x) `elem` rel)
+> -- $
 
 Exercise 8
 ----------
@@ -480,3 +481,146 @@ Which of the following relations are symmetric?  Antisymmetric
             Antisymmetric
     (d) The < relation
             Antisymmetric
+
+10.4.5 Transitive Relations
+---------------------------
+If x, y, and z are three people, and you know that x is a sister of y and y is a
+sister of z, then x must also be a sister of z. Similarly, if you know that x < y
+and also that y < z, it must also be the case that x < z. Relations that have
+this property are called transitive relations.
+
+Definition 41
+-------------
+A binary relation $R :: A × B$ is *transitive* if
+$$
+    ∀x,y,z ∈ A. x R y ∧ y R z → x R z
+$$
+
+Example 48
+----------
+The relation $R = \\{(1,2), (2,3), (1,3)\\}$ is transitive because it
+contains $(1,3)$, which is required by the presence of $(1,2)$ and $(2,3)$.
+
+Example 49
+----------
+The relation $R = \\{(1,2),(2,3)\\}$is not transitive because there are pairs
+$(1,2)$ and $(2,3)$, but there is no pair $(1,3)$.
+
+The (=) relation is transitive, as is the $IsAncestorOf$ relation.
+
+Example 51.
+-----------
+Suppose we are flying from one city to another. The relation
+$FlightTo$ describes the point-to-point flights that are available: for example,
+$(London,Paris) ∈ FlightTo$ because there is a direct flight from London to
+Paris. This relation is not transitive, because there are flights from many
+small cities to London, but those small cities don’t have direct flights to Paris.
+However, the $ReachableByAir$ relation is transitive. In effect, the airlines define
+the $FlightTo$ relation, and the travel agents extend this to the more general
+$ReachableByAir$ relation, which may involve several connecting flights.
+
+As the previous example suggests, a binary relation $R$ can be extended to make
+a new binary relation $R^T$, such that $R ⊆ R^T$ and $R^T$ is transitive.
+This often entails adding several new ordered pairs. For example, suppose we
+have a relation $CityMap$ that defines direct street connections, so that
+$(x,y) ∈ CityMap$ if there is a street connecting $x$ directly with $y$
+(Figure 10.6). The relation could be defined (for a small city) as
+
+$$
+\\{(Cathedral, Museum),(Museum, Market), (Market, Airport)\\}
+$$
+
+![Figure 10.6 and 10.7](./images/fig.10.6.jpg)
+
+The $CityMap$ relation is not transitive, because there is a street path from
+*Cathedral* to *Market*, but no street connects them directly. Just adding the
+pair $(Cathedral, Market)$ is not enough to make the relation transitive; a
+total of three orderede pairs must be added. These are shown as dashed arrows
+in Figure 10.7. The new pairs that we adedd to the relation are
+
+$$
+\\{(Cathedral,Market),(Catehdral,Airport),(Museum,Airport)\\}
+$$
+
+A transitive relation provides a short cut for every path of length 2 or more.
+To make a relation transitive, we must continue adding new pairs until the new
+relation is transitive. this process is called taking the *transitive closure* of
+the relation.
+
+We can write a Haskell function that determines whether a relation is transitive.
+
+> isTransitive :: (Ord a) => Digraph a -> Bool
+> isTransitive (Set xs, Set rel) = and
+>    [if (x,y) `elem` rel && (y,z) `elem` rel
+>         then (x,z) `elem` rel
+>         else True
+>         | x <- xs, y <- xs, z <- xs]
+
+Exercise 10
+-----------
+Determine by hand whether the following relations are transitive,
+and then check your conclusion using the computer.
+
+    isTransitive ([1,2], [(1,2),(2,1),(2,2)])
+    -- No! But if (1,1) was in there, it would be
+    isTransitive ([1,2,3], [(1,2)])
+    -- Yes
+
+Exercise 11
+-----------
+Determine which of the following relations on real numbers are transitive:
+$(=), (≠), (<), (≤), (>), (≥)$.
+$(=), (<), (>), (≤), (≥)$
+
+Exercise 12
+-----------
+Which of the following relations are transitive?
+
+    (a) The empty relation; Yes
+    (b) The IsSiblingOf relation; Yes
+    (c) An irreflexive relation; Yes
+    (d) The IsAncestorOf relation; Yes
+
+10.5 Relational Composition
+===========================
+We can think of a relation $R :: A × B$ as taking us from a point $x ∈ A$ to a
+point $y ∈ B$, assuming that $(x,y) ∈ R$. Now suppose there is another relation
+$S :: B × C$, and suppose that $(y,z) ∈ S$, where $z ∈ C$. Using first $R$ and then
+$S$, we get from $x$ to $z$, via the intermediate point $y$.
+We could define a new relation that describes the effect of doing first $R$ and
+then $S$. This is called the composition of $R$ and $S$, and the notation for it is
+$R;S$.
+
+The use of a semicolon (;) as the operator for relational composition is com-
+mon, but not completely standard.
+
+Definition 42
+-------------
+Let $R_1 :: A × B$ be a relation from set $A$ to set $B$, and
+$R_2 :: B × C$ be a relation from set $B$ to set $C$. Their *relational composition*
+is defined as follows:
+
+$ R_1;R_2 :: A × C$  
+$ R_1;R_2 = \\{(a,c)\ |\ a ∈ A ∧ c ∈ C ∧ (∃b ∈ B. (a,b) ∈ R_1 ∧ (b,c) ∈ R_2)\\}$
+
+
+The definition just says formally that $R_1;R_2$ consists of all the pairs
+$(a,c)$, such that there is an intermediate connecting point $b$. This means
+that $(a,b) ∈ R_1$ and $(b,c) ∈ R_2$
+
+Example 53
+----------
+When we compose two relations, any two links between $a$ and $b$
+in the first relation and $b$ and $c$ in the second produce a new link between a and
+c. Suppose we have a relation `Route1` linking Paris and London and `Route2`
+linking London and Birmingham. The composition of `Route1` and `Route2`
+yields a new route relation which shows that it is possible to travel taking
+first `Route1` and then `Route2`, starting from Paris and ending at Birmingham
+(Figure 10.8). In our diagram, the arcs are of three different patterns because
+they belong to three separate relations.
+
+![Figure 10.8](./images/fig.10.8.jpg)
+
+> composeRelation :: (Ord a, Ord b) => Set (a,b) -> Set (b,c) -> Set (a,c)
+> composeRelation (Set xs) (Set ys) =
+>    [(a,c) | a <- xs, b <- ys, ]
