@@ -621,6 +621,311 @@ they belong to three separate relations.
 
 ![Figure 10.8](./images/fig.10.8.jpg)
 
-> composeRelation :: (Ord a, Ord b) => Set (a,b) -> Set (b,c) -> Set (a,c)
-> composeRelation (Set xs) (Set ys) =
->    [(a,c) | a <- xs, b <- ys, ]
+Sometimes it is useful to compose a relation with itself. A common situa-
+tion is to start with a relation like *Flight*, which represents trips consisting of
+just one flight, starting from one city and ending in another one. The compo-
+sition *Flight;Flight* describes all the trips that can be made using exactly two
+connecting flights.
+
+Suppose that we need to know whether *a*, who died of a hereditary disease,
+was a blood relative of *b*. This could mean calculating all of the descendants
+of *a*, then checking to see whether *b* is among them. It might be better
+to save some of the work done (space permitting) in calculating the descendants
+of *a*, so that when we need to know whether *a* was a blood relative of *c*,
+some of the work need not be repeated.
+
+As an example, when determining whether `Joseph` and `Jane` are blood
+relations, we discover that $Joseph\ IsBloodRelationOf\ Sarah$,
+$Sarah\ IsBloodRelationOf\ Jane$, and $Jane\ IsBloodRelationOf\ Joel$.
+During this process, we add the newly discovered fact to the database:
+$Joseph\ IsBloodRelationOf\ Jane$. Now, when we have a query asking whether
+Joseph is a blood relation of Joel, the new link represents the two links
+between Joseph and Jane. This reduces the number of links to be traversed.
+
+In creating the composition of two relations, we look for arcs in the first
+relation that have terminal nodes matching the starting nodes of arcs in
+the second relation. This operation required that we systematically check
+all arcs in $R_1$ against all arcs in $R_2$.
+
+Example 54
+----------
+Let's calculate a relational composition by hand. Let
+$$
+R_1 = \\{(1,2),(2,3),(3,4)\\}
+$$
+
+The composition $R_1;R_1$ is worked out by deducing all the ordered pairs
+that correspond to an application of $R_1$ followed by an application of
+$R_1$.
+First we find all the ordered pairs of the form $(1,x)$. $R_1$ has only
+one ordered pair starting with 1; this is $(1,2)$. This means the first 
+application of $R_1$ goes from 1 to 2, and the $(2,3)$ pair means
+that the second application goes to 3. Therefore the composition
+$R_1;R_1$ should contain a pair $(1,3)$. Next, consider what happens
+starting with 2: The $(2,3)$ pair goes from 2 to 3, and looking at
+all the available pairs $\\{(1,2),(2,3),(3,4)\\}$ shows that 3 then goes
+to 4. Finally, we see what happens when we start with 3: the first application
+of $R_1$ goes from 3 to 4, but there is no pair of the form $(4,x)$. This means
+that there cannot be any pair of the form $(3,x)$ in the composition $R_1;R_1$.
+The result of all these comparisons is $R_1;R_1 = \\{(1,3),(2,4)\\}$
+(Figure 10.9). In our diagram, the new relation is indicated by arrows
+with dashes.
+
+![Figure 10.9](./images/fig.10.9.jpg)
+
+This is straightforward, yet tedious. We can write a function
+`relationalComposition` that implements this calculation: it defines
+a new relation giving two existing ones, by working out all the ordered
+pairs in their relational composition.
+
+> relationalComposition :: (Ord a, Ord b, Ord c) 
+>                       => Set (a,b) -> Set (b,c) -> Set (a,c)
+> relationalComposition (Set xs) (Set ys) = fromList $ concatMap fn xs where
+>    fn (x1,x2) = map (\(y1,y2) -> (x1,y2)) $ filter ((x2 ==) . fst) ys
+
+Exercise 13
+-----------
+First work out by hand the ordered pairs in the following relational
+compositions, and then check your results using the computer:
+
+    relationalComposition [(1,2),(2,3)] [(3,4)] -- [(2,4)]
+    relationalComposition [(1,2)] [(1,3)]       -- []
+
+Exercise 14
+-----------
+(a) Find the composition of the following relations:
+$$
+\\{(Alice, Bernard), (Carol, Daniel)\\} \text{ and } \\{(Bernard, Carol)\\}
+$$
+Answer: $\\{(Alice, Carol)\\}$
+
+(b) $\\{(a,b),(aa,bb)\\}$ and $\\{(b,c), (cc,bb)\\}$  
+Answer: $\\{(a,c)\\}$
+
+(c) $R;R$ where relation $R$ is defined as
+$$
+R = \\{(1,2),(2,3),(3,4),(4,1)\\}
+$$
+Answer: $\\{(1,3),(2,4),(3,1),(4,2)\\}$
+
+(e) The empty set and any other relation.  
+Answer: $\\{\\}$
+
+10.6 Powers of Relations
+========================
+For a relation $R$, the *n*th power is the composition
+$R;R;...;R$, where $R$ appears $n$ times, and its notation is $R^n$.
+Notice in particular that $R^2 = R;R$ and $R^1 = R$. It is also convenient
+to define $R^0$ to be identity relation.
+
+When a relation $R$ is composed with itself $n$ times, producing $R^n$,
+a path of length $n$ in $R$ from $a$ to $b$ causes there to be a single
+link $(a,b)$ in the power relation $R^n$
+
+Suppose that we have to calculate the relationships between several people
+in our database, and that the original facts are these (Figure 10.10):
+
+$$
+\begin{align}
+Andrew  \quad & IsParentOf\quad Beth \\\
+Beth    \quad & IsParentOf\quad Ian \\\
+Beth    \quad & IsParentOf\quad Joanna \\\
+Ian     \quad & IsParentOf\quad William \\\
+William \quad & IsParentOf\quad Tina
+\end{align}
+$$
+
+![Figure 10.10](./images/fig.10.10.jpg)
+
+The 0th power is just the identity relation, and the first power
+$IsParentOf^1$ is simply the $IsParentOf$ relation. The higher
+powers will tell us the grandparents, great grandparents, and
+great great grandparents. You should expect to see that each of the new
+relations $IsParentOf^2, IsParentOf^3$, and $IsParentOf^4$ connect up
+the starting and ending points of a path 2, 3, and 4 arcs long within
+the original $IsParentOf$ relation. In the following diagrams, the arrows
+with dashes indicate relations defiend as a power, while all other arrows
+belong to the $IsParentOf$ relation. If we compose the $IsParentOf$ relation
+with itself (i.e., $IsParentOf^2$), we have the grandparent relation
+(Figure 10.11)
+
+![Figure 10.11](./images/fig.10.11.jpg)
+
+$$
+\begin{align}
+Andrew \quad & IsGrandParentOf\quad Ian \\\
+Andrew \quad & IsGrandParentOf\quad Joanna \\\
+Beth   \quad & IsGrandParentOf\quad William \\\
+Ian    \quad & IsGrandParentOf\quad Tina
+\end{align}
+$$
+
+We can keep composing with the original relation.
+
+![Figure 10.12-13](./images/fig.10.12-13.jpg)
+
+We will now give the formal definition of relational powers.
+The definition is recursive, because we have to define the meaning
+of $R^n$ for all $n$. The base case of the recursion will be $R^0$,
+which is just the identity relation (it's like taking *zero* flights
+froma city, which leaves you where you started). The recursive case
+defiens $R^{n+1}$ using the value of $R^n$.
+
+Definition 43
+-------------
+Let $A$ be a set and let $R :: A × A$ be a relation defined over $A$.
+The *n*th power of $R$, denoted $R^n$, is defined as follows:
+
+$$
+\begin{align}
+R^0      & = & \\{(a,a) | a ∈ A\\} \\\
+R^{n+1}  & = R^n;R
+\end{align}
+$$
+
+Example 55
+----------
+Using the formal definition, we calculate $R^4$, where
+$$
+R = \\{(2,3),(3,2),(3,3)\\}
+$$
+$$
+R^4 = R^3;R = R^2;R;R = R^1;R;R;R = R;R;R;R
+$$
+
+First we calculate $R^2 = R;R = \\{(2,2),(2,3),(3,2),(3,3)\\}$
+Now we calculate $R^3 = R^2;R$
+$$
+\\{(2,2),(2,3),(3,2),(3,3)\\} ; \\{(2,3),(3,2),(3,3)\\} = \\{(2,3),(2,2),(3,3),(3,2)\\}
+$$
+
+At this point, we can notice that $R^3 = R^2$. In other words, composing
+$R^2$ with $R$ just gives back $R^2$, and we can do this any number of times.
+This means that any further powers will be the same as $R^2$ - so we have found
+$R^4$ without needing to do lots of calculations with ordered pairs.
+
+Releational composition is associative. This causes the powers on
+relational composition to follow algebraic laws that are similar to the corresponding
+laws for powers on numer. For example, $R^{(a+b)} = R^a;R^b$.
+
+A relation whose domain is $\\{x_0, ..., x_{n-1}\\}$ is *cyclic* if it contains
+a cycle of ordered pairs of the form 
+$(x_0,x_1),(x_1,x_2),(x_2,x_3),(x_3,x_4),...,(x_{n-1},x_0)$.
+That is, the relation is cyclic if there is a cycle comprising all the elements
+of its domain.
+Consider what happens to a cyclic relation as we calculate its powers. The 
+relation is defined as
+$$
+R = \\{(a,b),(b,c),(c,a)\\}
+$$
+
+The first power $R^1$ is just $R$. The second power $R^2$ is calculated by working
+out the ordered pairs in $R;R$; the result is
+$$
+\begin{align}
+R^2 & = \\{(a,b),(b,c),(c,a)\\};\\{(a,b),(b,c),(c,a)\\} \\\
+    & = \\{(a,c),(b,a),(c,b)\\}
+\end{align}
+$$
+
+![Figure 10.14](./images/fig.10.14.jpg)
+
+This contains only paths between the start and end points of all the paths of
+length two in the original relation. Now the third power is
+
+$$
+\begin{align}
+R_3 & = \\{(a,c),(b,a),(c,b)\\};\\{(a,b),(b,c),(c,a)\\} \\\
+    & = \\{(a,a),(b,b),(c,c)\\}.
+\end{align}
+$$
+
+This result contains only arcs connecting the origin and destination points of
+paths of length three in the original relation. What will happen next?
+
+$$
+\begin{align}
+R_4 & = \\{(a,a),(b,b),(c,c)\\};\\{(a,b),(b,c),(c,a)\\} \\\
+    & = \\{(a,b),(b,c),(c,a)\\}
+\end{align}
+$$
+
+Just what we might have expected: each of these arcs represents a path of
+length 4, so we have started round the cycle again. What can we now say
+about the powers of this relation? They repeat in a cycle.
+$R^4 = R^1, R^5^ = R^2$ and in general $R^{n+3} = R^n$ (Figure 10.14).
+
+We can define a function `equalityRelation`, which takes a set and
+returns the equality relation on that set
+
+> equalityRelation :: (Ord a) => Set a -> Set (a,a)
+> equalityRelation (Set xs) = fromList $ map (\x -> (x,x)) xs
+
+And a function that calcualte sthe power of a relation.
+
+> relationalPower :: (Ord a) => Digraph a -> Int -> Set (a,a)
+> relationalPower (s, _) 0 = equalityRelation s
+> relationalPower (Set _, rel) 1 = rel
+> relationalPower (Set xs, rel) n = relPow n rel where
+>    relPow n rel
+>        | n <= 1    = rel
+>        | otherwise = relationalComposition (relPow (n-1) rel) rel
+
+Exercise 15
+-----------
+Work out the values of these expressions, and then evaluate them using
+the computer:
+
+    equalityRelation [1,2,3] -- [(1,1),(2,2),(3,3)]
+    equalityRelation ([]::[Int]) -- []
+
+Exercise 16
+-----------
+Calculate the following relational powers by hand, and then evaluate them
+using the computer.
+
+    relationalPower ([1,2,3,4], [(1,2),(2,3),(3,4)]) 1 -- [(1,2),(2,3),(3,4)]
+    relationalPower ([1,2,3,4], [(1,2),(2,3),(3,4)]) 2 -- [(1,3),(2,4)]
+    relationalPower ([1,2,3,4], [(1,2),(2,3),(3,4)]) 3 -- [(1,4)]
+    relationalPower ([1,2,3,4], [(1,2),(2,3),(3,4)]) 4 -- []
+
+Exercise 17
+-----------
+Why do we not need to check the ordered pairs in $R$ while calculating $R^0;R$.
+
+$R^0$ is the identity, so we just need to "copy" each node into a relfexive relation.
+
+Exercise 18
+-----------
+Why can we stop calculating powers after finding that two successive powers
+are the same relation?
+
+Because then we have a loop!
+
+Exercise 19
+-----------
+What is $R^4$ where $R$ is $\\{(2,2),(4,4)\\}$
+
+It is also $\\{(2,2),(4,4)\\}$, because it is the identity relation.
+
+Exercise 20
+-----------
+What is the relationship between adding new ordered pairs to make a 
+relation transitive and taking the power of a relation?
+
+Taking the power of a relation will take a relation "one step further" to making
+it transitive.
+
+Exercise 21
+-----------
+Suppose a set $A$ contains $n$ elements. How many possible relations
+with type $R :: A × A$ are there?
+
+    0 = 0
+    1 = 1
+    2 = 2^(2^2)
+    3 = 3^(3^2)
+
+So $2^(n^2)$. In general, for a set of $n$ elements, there are $n^2$ possible
+ordered pairs, and for every single pair we can choose to include it or
+not include it in a relation, which gives is $2^(n^2)$ possible relations.
