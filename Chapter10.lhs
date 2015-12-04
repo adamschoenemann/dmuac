@@ -929,3 +929,258 @@ with type $R :: A × A$ are there?
 So $2^(n^2)$. In general, for a set of $n$ elements, there are $n^2$ possible
 ordered pairs, and for every single pair we can choose to include it or
 not include it in a relation, which gives is $2^(n^2)$ possible relations.
+
+Exercise 22
+-----------
+Given the relation $\\{(a,b),(b,c),(c,d),(d,e)\\}$, how many times would we have
+to compose this relation with itself before the empty relation is produced?
+
+4 times, to get R^5
+
+Exercise 23
+-----------
+Given the set $A = \\{1,2,3\\}$ and the relation $R :: A × A$ where
+$R = \\{(3,1),(1,2),(2,3)\\}$, what is the value of $R^2$? $R^3$?
+
+$$
+\begin{align}
+R^2 = \\{(3,2),(1,3),(2,1)\\} \\\
+R^3 = \\{(3,3),(1,1),(2,2)\\}
+\end{align}
+$$
+
+10.7 Closure Properties of Relations
+====================================
+We want to keep our relations as small as possible, for easy maintenance, yet we also
+want them to have nice properties such as transitivity, reflexivity, symmetricality etc.
+
+In order to accomplish this we define *two* relations:
+
+1. A basic relation containing just the essential information
+2. A larger relation is dervied from the basic one by adding the ordered pairs
+   required to give it the special properties that are needed.
+   
+When circumstances change, only the basic relation is edited by hand. The derived
+one is recalculated using a computer!
+
+Example 56
+----------
+An airline keeps a set of all the flights they offer. This is
+represented by a relation $Flight$, where $(a,b) ∈ Flight$ if the airline has a di-
+rect flight from $a$ to $b$. However, when a customer asks a question like ‘Do
+you fly from Glasgow to Seattle?’, the airline needs a transitive relation: if
+$(Glasgow,New York) ∈ Flight$ and also $(New York,Seattle) ∈ Flight$, the an-
+swer should be yes. Thus the airline’s flight-planning staff define the basic
+relation $Flight$, but the sales staff work with a derived relation that is similar
+to $Flight$, but which is transitive.
+
+A relation derived in this way is called the *closure* of the basic relation:
+
+Definition 44
+-------------
+The *closure* of a relation $R$ with respect to a given property is the smallest
+possible relation that contains $R$ and has that property.
+
+Closure is suitable for adding properties that require the presence of certain
+ordered pairs. For example, you can take the symmetric closure of a relation by
+checking every existing pair (x,y), and adding the pair (y,x) if it isn’t already
+present. However, closure is not suitable for properties that require the absence
+of certain ordered pairs. For example, the relation R = {(1,1),(1,2),(2,3)}
+does not have an irreflexive closure, as that would need to contain (1,1) (be-
+cause the closure must contain the basic relation), yet it must not contain (1,1)
+(in order to be irreflexive).
+
+You can give a relation a property such as reflexivity, or transitivity, by cre-
+ating its reflexive or transitive closure. Notice, however, that the new relation
+may no longer have all of the properties of the original relation. For example,
+suppose that a relation is irreflexive, as in {(1,2),(2,1)}. The smallest possible
+transitive relation containing this one also has the arcs (1,1) and (2,2), which
+means that it is no longer irreflexive.
+
+10.7.1 Reflexive Closure
+========================
+The reflexive closure contains all of the arcs in the relation
+together with an arc from each node to itself.
+
+Definition 45
+-------------
+Let $A$ be a set, and let $R :: A × A$ be a binary relation over $A$. The
+*reflexive closure* of $R$ is the reation $R'$ such that $R'$ is reflexive,
+$R'$ is a superset of $R$, and for any reflexive relation $R''$, if $R''$ is
+a superset of $R$, then $R''$ is a superset of $R'$. The notation $r(R)$
+denotes the reflexive closure of $R$.
+
+Example 57
+----------
+The reflexive closure of the relation $\\{(1,2),(2,3)\\}$ is 
+$\\{(1,2),(2,3),(2,2),(3,3),(1,1)\\}
+
+The following theorem provides a straightforward method for calculating
+the reflexive closure of a relation:
+
+Theorem 73
+----------
+Let $A$ be a set, let $E$ be the equality relation on $A$, and let $R$
+be a binary relation defined over $A$. Then $r(R) = R ∪ E$
+
+Or, in Haskell
+
+> reflexiveClosure :: (Ord a) => Digraph a -> Digraph a
+> reflexiveClosure (s, rs) = (s, rs +++ equalityRelation s)
+
+Exercise 24
+-----------
+Work out the following reflexive closures by hand, and then
+check your results using the computer:
+
+    reflexiveClosure ([1,2,3], [(1,2),(2,3)]) = ([1,2,3], [(1,1),(2,2),(3,3),(1,2),(2,3)])
+    reflexiveClosure ([1,2], [(1,2),(2,1)]) = ([1,2], [(1,1),(2,2),(1,2),(2,1)])
+
+Exercise 25
+-----------
+What is the reflexive closure of the relation $R;R$ where $R$ is defined as
+$\\{(1,2),(2,1)\\}$
+
+$$
+r(R;R) = r(\\{(1,1),(2,2)}\\) = \\{(1,1),(2,2)\\} = R;R
+$$
+
+10.7.2 Symmetric Closure
+========================
+The formal definition of a symmetric closure is similar to the definition of
+reflexive closure.
+
+Definition 46
+-------------
+Let $A$ be a set, and let $R :: A × A$ be a binary relation over $A$. The
+*symmetric closure* of $R$ is the relation $R'$ such that $R'$ is symmetric,
+$R'$ is a superset of $R$, and for any symmetric relation $R''$, if $R''$
+is a superset of $R$, then $R''$ is a superset of $R'$. The notation $s(R)$
+denotes the symmetric closure of $R$.
+
+Sometimes it is useful to turn around a relation and use its ordered pairs
+in reverse. This is called the *converse* of the relation
+
+Definition 47
+-------------
+Let $A$ and $B$ be sets, and let $R :: A × B$ be a binary relation from $A$
+to $B$. The *converse* of $R$, written $R^c$, is the binary relation from $B$
+to $A$ defined as follows.
+$$
+R^c = \\{(b,a) | (a,b) ∈ R \\}
+$$
+
+The symmetric closure of a relation is the union of he relation and its converse.
+The following theorem states this formally:
+
+Theorem 74
+----------
+Let $A$ be a set and let $R :: A × A$ be a binary relation over $A$.
+Then the symmetric closure $s(R) = R ∪ R^c$.
+
+In Haskell::
+
+> symmetricClosure :: Ord a => Digraph a -> Digraph a
+> symmetricClosure (s, r) = (s, r +++ converse r)
+
+> converse :: (Ord a, Ord b) => Set (a,b) -> Set (b,a)
+> converse (Set xs) = fromList $ map (\(a,b) -> (b,a)) xs
+
+Exercise 26
+-----------
+Work out the following symmetric closures by hand, and then calculate
+them using the computer:
+
+    symmetricClosure ([1,2], [(1,1),(1,2)]) -- ([1,2], [(1,1),(1,2),(2,1)])
+    symmetricClosure ([1,2,3], [(1,2),(2,3)]) -- ([1,2], [(2,1),(3,2),(1,2),(2,3)])
+
+10.7.3 Transitive Closure
+=========================
+You can define a relation that describes one step; the transitive closure of the
+relation then describes the effect of taking $n$ steps, for any $n$.
+
+Consider now how to calculate the transitive closure of a relation. As an
+example, suppose that you need to define the $IsDescendantOf$ relation in a
+database of people. The database contains records for Zoe, Bruce, Gina,
+Annabel, Dirk, Kay, and Don. We start with the $IsChildOf$ relation, defined
+as follows:
+$$
+    \\{(Zoe,Bruce),(Gina,Zoe), \\\
+    (Bruce,Annabel),(Dirk,Kay), \\\
+    (Kay,Don),(Annabel,Kay)\\}
+$$
+
+Observe that the relation $IsDescendantOf$ should have all these arcs, and
+many more. For example, $Gina$ is a descendant of $Bruce$.
+
+![Figure 10.17](./images/fig.10.17.jpg)
+
+The transitive closure should contain "shortcuts" between any paths of length 2 or more
+in the original relation. As such, we need to take all the necessary powers of the relation
+until no more are needed. If there are $n$ nodes in the digraph, the longes possible path
+(ignoring cycles) must be no more than $n - 1$ elements long.
+
+Definition 48
+-------------
+Let $A$ be a set of $n$ elements, and let $R :: A × A$ be a binary relation over $A$.
+The *transitive closure* of $R$ is defined as follows
+
+$$
+t(R) = ⋃_{i=1}^n R^i.
+$$
+
+For example, if a set $A$ has four elements, then the transitive closure
+of a relation $R :: A × A$ would be
+$$
+R^1 ∪ R^2 ∪ R^3 ∪ R^4
+$$
+
+The $IsDescendantOf$ relation is the union of as many powers of the $IsChildOf$
+relation as there are people in the $IsChildOf$ relation's domain.
+
+In Haskell:
+
+> transitiveClosure :: Ord a => Digraph a -> Digraph a
+> transitiveClosure rel@(Set nodes, _) = (Set nodes, close rel (length nodes)) where
+>    close rel n
+>       | n <= 1 = snd rel
+>       | otherwise = (relationalPower rel n) +++ close rel (n-1)
+
+Exercise 29
+-----------
+Work out the following transitive closures by hand, and then evaluate them using
+the computer:
+
+    transitiveClosure ([1,2,3], [(1,2),(2,3)]) -- ([1,2,3], [(1,2),(2,3),(1,3)])
+    transitiveClosure ([1,2,3], [(1,2),(2,1)]) -- ([1,2,3], [(1,2),(2,1),(1,1),(2,2)])
+
+Exercise 30
+-----------
+Given a digraph $(\\{1,2,3,4\\}, \\{(1,2)\\})$, what can we do to speed up the transitive
+closure algorithm, which requires that we take as many powers of the relation as there
+are nodes in the digraph?
+
+We could stop if the relations only contain one pair? Or stop when the relational power
+yields an empty set.
+
+Exercise 31
+-----------
+Find the transitive symmetric closure and the symmetric transitive closure of the following
+relations:
+
+- a. $\\{(a,b),(a,c)\\}$
+    - ts: $t(s(R)) = t(\\{(a,b),(a,c),(b,a),(c,a)\\}) = \\{(a,a),(b,b),(b,c),(c,b),(c,c),(a,b),(a,c),(b,a),(c,a)\\}$
+    - st: $s(t(R)) = s(\\{(a,b),(a,c)\\}) = \\{(a,b),(a,c),(b,a),(c,a)\\}$
+- b. $\\{(a,b)\\}$
+    - ts: $t(s(R)) = t(\\{(a,b),(b,a)\\}) = \\{(a,b),(b,a),(a,a)\\}$
+    - st: $s(t(R)) = s(\\{(a,b)\\}) = \\{(a,b),(b,a)\\}$
+- c. $\\{(1,1),(1,2),(1,3),(2,3)\\}$
+    - ts: 
+        $$
+        t(s(R)) = t(\\{(2,1),(3,1),(3,2),(1,1),(1,2),(1,3),(2,3)\\}) = \\\
+            \\{(2,2),(3,3),(2,1),(3,1),(3,2),(1,1),(1,2),(1,3),(2,3)\\}
+        $$
+    - st: $s(t(R)) = s(\\{(1,1),(1,2),(1,3),(2,3)\\}) = \\{(1,1),(1,2),(2,1),(1,3),(3,1),(2,3),(3,2)\\}$
+- d. $\\{(1,2),(2,1),(1,3)\\}$
+    - ts: $t(s(R)) = t(\\{(1,2),(2,1),(1,3),(3,1)\\}) = \\{(1,1),(2,3),(3,2),(1,2),(2,1),(1,3),(3,1),(3,3),(2,2)\\}$
+    - st: $s(t(R)) = s(\\{(1,1),(2,2),(1,2),(2,1),(1,3),(2,3)\\}) = \\{(3,1),(3,2),(1,1),(2,2),(1,2),(2,1),(1,3),(2,3)\\}$
