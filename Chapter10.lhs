@@ -77,7 +77,8 @@ but the set $\{(1,2), (5,6)\}$ is not.
 
 In Haskell, we can represent a digraph as
 
-> type Digraph a = (Set a, Set (a,a))
+> type Relation a = Set (a,a)
+> type Digraph a = (Set a, Relation a)
 
 10.3 Computing with Binary Relations
 ====================================
@@ -1184,3 +1185,137 @@ relations:
 - d. $\\{(1,2),(2,1),(1,3)\\}$
     - ts: $t(s(R)) = t(\\{(1,2),(2,1),(1,3),(3,1)\\}) = \\{(1,1),(2,3),(3,2),(1,2),(2,1),(1,3),(3,1),(3,3),(2,2)\\}$
     - st: $s(t(R)) = s(\\{(1,1),(2,2),(1,2),(2,1),(1,3),(2,3)\\}) = \\{(3,1),(3,2),(1,1),(2,2),(1,2),(2,1),(1,3),(2,3)\\}$
+
+10.8 Order Relations
+====================
+An order relation specifies an ordering that can be used to create a sequence
+from the elements of its domain. Order relations are extremely important
+in computing, because data values often need to be placed in a well-defined
+sequence for processing.  
+Examples: (<), (≤), (>) etc.  
+Always transitive. If $a$ is before $b$ and $b$ is before $c$, then $a$ is before $c$.
+
+10.8.1 Partial Order
+====================
+At least of elements on the domain in sequence, but not necessarily all.
+
+Example 63
+----------
+Suppose that a database of people contains records that specify
+the breed of dog owned—for those people who have a dog. The records of
+dog owners could be ordered alphabetically using the breed name, producing a
+sequence of dog owners. However, this ordering would not include the people
+who don’t have dogs, so it is only a partial order. Of course, it might happen
+that everyone (or no one) owns a dog, in which case we would still technically
+have a partial order. That is, it is possible that the entire partial order is sorted
+using some ordering; the point is just that this is not required.
+
+Example 64
+----------
+Consider the problem of ordering all the records in the database
+by people’s names. Some names are common, so there might be more than one
+record per name. Therefore this is a partial order.
+
+Example 65
+----------
+We are programming with a data structure that contains ordered
+pairs (x,y), and we define an ordering such that the pair $(x_1, y_1)$ precedes the
+pair $(x_2, y_2)$ if $x_1 ≤ x_2 ∧ y_1 ≤ y_2$. This is a partial order, because it doesn’t
+specify the ordering between $(1,4)$ and $(2,3)$.
+The formal definition of partial orders is stated using the properties of
+relations that we have already defined:
+
+Definition 49
+-------------
+A binary relation $R$ over a set $A$ is a partial order if it is
+reflexive, antisymmetric, and transitive.
+
+Suppose that we used age to order our database records. Our
+$IsYoungerOrSameAgeAs$ relation is reflexive, antisymmetric, and transitive, so
+it is a partial order. Figure 10.19 gives its digraph.
+
+![Figure 10.19](./images/fig.10.19.jpg)
+
+Poset Diagrams
+--------------
+Often we don't want to draw *all* the arcs of a relation, because there are so
+many, e.g. in a partial order.
+
+A *poset* (partially ordered set) diagram is a relation diagram for partial orders,
+where the distracting transitive and reflexive arcs are omitted. It is 
+important to state explicitly that the diagarm shows a partial order (or a poset);
+without knowing this fact, a reader would not know that the relation also contains
+the reflexive and transitive arcs.
+
+![!Figure 10.20](./images/fig.10.20.jpg)
+
+Weakest and Greatest Elements ofa Poset
+---------------------------------------
+The following definitions give the standard terminology used to describe how
+two elements of a partial order are related to each other:
+
+Definition 50
+-------------
+If there is a directed path from $x$ to $y$ in a partial order (i.e., if
+$x$ precedes $y$ in the partial order), then $x$ *is weaker than* $y$. The math
+notation for this x ⊑ y. If x ⊑ y is false, then we write x ⋢ y.
+
+Definition 51
+-------------
+Two nodes $x$ and $y$ in a partial order are incomparable if
+x ⋢ y ∧ y ⋢ x. That is, $x$ and $y$ are incomparable if there is no directed path
+from $x$ to $y$, and there is also no directed path from $y$ to $x$.
+
+In a finite set of numbers, there must be a unique smallest element and a
+unique greatest element. However, a poset might have several least elements.
+For example, if x and y are incomparable, but they are both weaker than all
+the other elements of the poset, then both are least elements. Similarly, there
+may be several greatest elements. The following definitions define the sets of
+least and greatest elements formally:
+
+Definition 52
+------------
+The set of *least elements* of a poset $P$ is
+$$
+\\{x ∈ P\ |\ ∀y ∈ P. (x ⊑ y ∨ (x ⋢ y ∧ y ⋢ x))\\}
+$$
+That is, the least elements of P are the elements that are either incomparable
+to or weaker than any other element.
+
+Definition 53
+-------------
+The set of *greatest elements* of a poset $P$ is
+$$
+\\{x ∈ P\ |\ ∀y ∈ P. (y ⊑ x ∨ (x ⋢ y ∧ y ⋢ x))\\}
+$$
+
+That is, the greatest elements of $P$ are the elements that are either incomparable
+to or greater than any other element.
+
+Example 69
+----------
+Figure 10.21 shows a poset where the set of weakest elements
+is {c}, and the set of greatest elements is {a,f,e}.
+
+![Figure 10.21](./images/fig.10.21.jpg)
+
+The following Haskell function takes a digraph and returns `True`
+if the digraph represents a parital order and `False` otherwise.
+
+> isPartialOrder :: (Ord a) => Digraph a -> Bool
+> isPartialOrder set = and $ map ($ set) [isTransitive, isReflexive, isAntisymmetric]
+
+The following two functions each take a relation and an element. The first
+one returns `True` if the second argument is a least element in the relation, and
+`False` otherwise. The second function returns `True` if the element is a greatest
+element in the relation and `False` otherwise.
+
+> isWeakest, isGreatest :: (Ord a) => Relation a -> a -> Bool
+> isWeakest (Set rel) x = not $ or $ map findWeaker rel where
+>    findWeaker (y, x')
+>       | x' == x = if (x', y) `elem` rel then False else True
+>       | otherwise = False
+> isGreatest (Set rel) x = not $ or $ map findGreater rel where
+>    findGreater (x', y)
+>       | x' == x = if (y, x') `elem` rel then False else True
+>       | otherwise = False
