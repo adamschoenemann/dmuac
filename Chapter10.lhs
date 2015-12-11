@@ -3,6 +3,7 @@
 
 > module Chapter10 where
 > import Chapter8
+> import Debug.Trace
 
 10.1 Binary Relations
 =====================
@@ -862,7 +863,7 @@ returns the equality relation on that set
 > equalityRelation :: (Ord a) => Set a -> Set (a,a)
 > equalityRelation (Set xs) = fromList $ map (\x -> (x,x)) xs
 
-And a function that calcualte sthe power of a relation.
+And a function that calculate sthe power of a relation.
 
 > relationalPower :: (Ord a) => Digraph a -> Int -> Set (a,a)
 > relationalPower (s, _) 0 = equalityRelation s
@@ -1249,8 +1250,8 @@ the reflexive and transitive arcs.
 
 ![!Figure 10.20](./images/fig.10.20.jpg)
 
-Weakest and Greatest Elements ofa Poset
----------------------------------------
+Weakest and Greatest Elements of a Poset
+----------------------------------------
 The following definitions give the standard terminology used to describe how
 two elements of a partial order are related to each other:
 
@@ -1258,12 +1259,12 @@ Definition 50
 -------------
 If there is a directed path from $x$ to $y$ in a partial order (i.e., if
 $x$ precedes $y$ in the partial order), then $x$ *is weaker than* $y$. The math
-notation for this x ⊑ y. If x ⊑ y is false, then we write x ⋢ y.
+notation for this $x ⊑ y$. If $x ⊑ y$ is false, then we write $x ⋢ y$.
 
 Definition 51
 -------------
 Two nodes $x$ and $y$ in a partial order are incomparable if
-x ⋢ y ∧ y ⋢ x. That is, $x$ and $y$ are incomparable if there is no directed path
+$x ⋢ y ∧ y ⋢ x$. That is, $x$ and $y$ are incomparable if there is no directed path
 from $x$ to $y$, and there is also no directed path from $y$ to $x$.
 
 In a finite set of numbers, there must be a unique smallest element and a
@@ -1300,7 +1301,7 @@ is {c}, and the set of greatest elements is {a,f,e}.
 ![Figure 10.21](./images/fig.10.21.jpg)
 
 The following Haskell function takes a digraph and returns `True`
-if the digraph represents a parital order and `False` otherwise.
+if the digraph represents a partial order and `False` otherwise.
 
 > isPartialOrder :: (Ord a) => Digraph a -> Bool
 > isPartialOrder set = and $ map ($ set) [isTransitive, isReflexive, isAntisymmetric]
@@ -1311,11 +1312,513 @@ one returns `True` if the second argument is a least element in the relation, an
 element in the relation and `False` otherwise.
 
 > isWeakest, isGreatest :: (Ord a) => Relation a -> a -> Bool
-> isWeakest (Set rel) x = not $ or $ map findWeaker rel where
->    findWeaker (y, x')
->       | x' == x = if (x', y) `elem` rel then False else True
->       | otherwise = False
-> isGreatest (Set rel) x = not $ or $ map findGreater rel where
->    findGreater (x', y)
->       | x' == x = if (y, x') `elem` rel then False else True
->       | otherwise = False
+> isWeakest = extremesFinder snd
+> isGreatest = extremesFinder fst
+> 
+> extremesFinder :: (Ord a) => ((a,a) -> a) -> Relation a -> a -> Bool
+> extremesFinder ex (Set rel) x = incomparable || findExtreme where
+>     incomparable  = (length $ filter (\(y,z) -> y == x || z == x) noReflexive) == 0
+>     findExtreme   = (length $ filter ((== x) . ex) noReflexive) == 0
+>     noReflexive   = filter (/= (x,x)) rel
+
+
+These functions each take a digraph; the first function returns the set of
+weakest elements while the second function returns the set of greatest elements:
+
+> weakestSet, greatestSet :: (Ord a) => Digraph a -> Set a
+> weakestSet (Set xs, rel) = fromList $ filter (isWeakest rel) xs
+> greatestSet (Set xs, rel) = fromList $ filter (isGreatest rel) xs
+
+Exercise 32
+-----------
+Work out by hand whether the following digraphs are partial orders, and then check
+your results using the computer.
+
+    isPartialOrder ([1,2,3], [(1,2),(2,3)]) -- nope, it is not reflexive or transitive
+    isPartialOrder ([1,2,3], [(1,2),(2,3),(1,3),(1,1),(2,2),(3,3)]) -- yep!
+
+Exercise 33
+-----------
+Calculate the following by hand, and then evaluate with the computer.
+
+    isWeakest [(1,2),(2,3),(1,3),(1,1),(2,2),(3,3)] 2 -- nope, because (1,2)
+    isWeakest [(1,2),(1,3),(1,1),(2,2),(3,3)] 3 -- nope, because 1 ⊑ 3
+
+    isGreatest [(1,2),(2,3),(1,3),(1,1),(2,2),(3,3)] 3 -- Yeap
+    isGreatest [(1,2),(1,3),(1,1),(2,2),(3,3)] 1 -- Nope, there is a tuple (1,2) (or (1,3))
+
+Exercise 34
+-----------
+Calculate the following by hand and evaluate
+
+    weakestSet ([1,2,3,4], [(1,4),(1,3),(1,2),(1,1),(2,3),(2,4),(2,2),(3,4),(3,3),(4,4)]) -- [1]
+    weakestSet ([1,2,3,4], [(1,4),(1,2),(1,1),(2,4),(2,2),(3,4),(3,3),(4,4)]) -- [1,3]
+    greatestSet ([1,2,3,4], [(1,2),(3,4),(1,1),(2,2),(3,3),(4,4)]) -- [2,4]
+    greatestSet ([1,2,3,4], [(2,3),(3,4),(2,4),(1,1),(2,2),(3,3),(4,4)]) -- [1,4]
+
+Exercise 35
+-----------
+What are the greatest and weakest elements in a poset diagram that contains the following arcs:
+
+- (a) $\\{(a,b),(a,c)\\}$
+    - weakest = {a}. greatest = {b,c}
+- (b) $\\{(a,b),(c,d)\\}$
+    - weakest = {a,c}. greatest = {b,d}
+- (c) $\\{(a,b),(a,d),(b,c)\\}$
+    - weakest = {a}. greatest = {d,c}
+
+10.8.2 Quasi Order
+==================
+A quasi order is similar to a partial order, except that it is irreflexive:
+
+Definition 54
+-------------
+A binary relation $R$ over a set $A$ is a quasi order if it is
+irreflexive and transitive.
+
+Example 70
+----------
+The relation (<) on numbers is a quasi order, but (≤) is not.
+
+Notice that the definition of a quasi order doesn’t mention symmetry. Can
+a quasi order be symmetric? Suppose there are two elements $x$ and $y$, such that
+$x ⊑ y$. If the quasi order were symmetric, then we would also have $y ⊑ x$, and
+since it is also transitive, we then have $x ⊑ x$, which violates the requirement
+that a quasi order be irreflexive. This argument would not apply, of course, in
+a trivial quasi order where no two elements are related by $⊑$, but non-trivial
+quasi orders *cannot be symmetric*.
+
+We should also inquire whether a quasi order can be (or must be) antisym-
+metric. By definition, it is antisymmetric if $x ⊑ y ∧ y ⊑ x → x = y$ for any two
+elements $x$ and $y$. Now, if we choose $x$ and $y$ to be the same, then
+$x ⊑ y ∧ y ⊑ x$ is false, because the quasi order is irreflexive.
+This means the logical implication is vacuously true.
+If we choose $x$ and $y$ to be different, then $x ⊑ y ∧ y ⊑ x$
+is again false (as we have just shown while discussing symmetry). In all cases,
+therefore, the definition of antisymmetry is satisfied, but vacuously.
+The conclusion is that quasi orders may be symmetric, but only if they
+are trivial, and they are always antisymmetric, but only because they satisfy
+the definition vacuously. The properties of symmetry and antisymmetry are
+uninteresting for quasi orders.
+
+Example 71
+----------
+Figure 10.22 gives the graph diagram for the quasi order (<)
+on the set $\\{1,2,3,4\\}$.
+
+![Figure 10.22](./images/fig.10.22.jpg)
+
+The following functino tages a digraph and returns `True` if the relation
+it represents is a quasi order, and `False` otherwise.
+
+> isQuasiOrder :: Ord a => Digraph a -> Bool
+> isQuasiOrder dig = isIrreflexive dig && isTransitive dig
+
+
+Exercise 36
+-----------
+Work out the following expressions, and evaluate them with the computer:
+
+    isQuasiOrder ([1,2,3,4], [(1,2),(2,3),(3,4)]) -- nope, not transitive
+    isQuasiOrder ([1,2,3,4], [(1,2)]) -- yeap
+
+10.9.3 Linear Order
+===================
+A *linear order* or *total order* is like a partial order, except that it requires that
+all of the relation’s elements must be related to each other.
+
+Example 72
+----------
+The $(≤)$ and $(≥)$ relations on real numbers are total orders: any
+two numbers $x$ and $y$ can be compared with each other, and it is guaranteed
+that either $x ≤ y$ or $y ≤ x$ will be true (and both are true if $x = y$).
+
+Definition 55
+-------------
+A linear order is a partial order defined over a set $A$ in which
+for each element $a$ and $b$ in $A$, either $a ⊑ b$ or $b ⊑ a$.
+
+The elements of a linear order can be said to form a chain. When we
+draw the graph diagram for a chain, we omit the arcs that are implied by
+transitivity and reflexivity. Without these extra arcs, and because no element
+can be incomparable to the others, the diagram looks like a real chain. For
+example, the colours of the rainbow are often given as a chain starting with Red
+and ending with Violet. As Red light has the longest wavelength and Violet the
+shortest, the relation that imposes this chain ordering on the set of six colours
+is the $≤$ relation on the wave frequency.
+
+The `isLinearOrder` function takes a digraph and returns `True`if it represents a
+linear order, and `False` otherwise.
+
+> isLinearOrder :: Ord a => Digraph a -> Bool
+> isLinearOrder dig@(Set xs, Set rel) = isPartialOrder dig && (and $ map isOrdered xs) where
+>   isOrdered x = (length $ filter (\(y,z) -> x == y || x == z) rel) == length xs
+
+Exercise 37
+-----------
+Eval by hand and check with computer.
+
+    isLinearOrder ([1,2,3], [(1,2),(2,3),(1,3),(1,1),(2,2),(3,3)]) -- yes
+    isLinearOrder ([1,2,3], [(1,2),(1,3),(1,1),(2,2),(3,3)]) -- no
+
+10.8.4 Well Order
+=================
+A *well order* is a total (or linear) order that has a least element; furthermore,
+every subset of a well order must have a least element.
+The existence of a least element is significant because it provides a base
+case for recursive functions and for inductive proofs. Note that any total order
+that has a finite number of elements must have a least element. Some total
+orders with an infinite number of elements have a least element, and others do
+not.
+
+Example 74
+----------
+The $(≤)$ relation on the set $N = \\{0,1,2,...}$ of natural numbers
+is a total order. Furthermore, $N$ has a least element, because $∀x ∈ N. 0 ≤ x$.
+Therefore $(≤)$ on $N$ is a well order.
+
+Example 75
+----------
+The $(≤)$ relation on the set $Z = {...,−2,−1,0,1,2,...}$ of
+integers is a total order. However, $Z$ does not have a least element, because
+$$
+∀x ∈ Z.∃y ∈ Z.(y ≤ x ∧ y ?= x).
+$$
+
+Therefore $(≤)$ on $Z$ is only a total order, and not a well order.
+
+Definition 56
+-------------
+Given a set $S$ and a binary relation $R$ over $S$, $R$ is a well order
+if $R$ is a linear order and every subset of $S$ that is not empty contains a least
+element.
+
+Well orders are important because they support induction, and they are
+countable. Informally, a countable set is a set in which an arbitrary item can
+eventually be processed by a computer. The set could be infinite: for example,
+the set of natural numbers is infinite, but *every* element of that set would
+eventually be reached if we just work on 0, 1, 2, ... in sequence. For example,
+if a computer started printing the natural numbers, we would eventually see the
+number 4058000023. However, if it started printing an uncountable set such as
+the irrational numbers, then it might get stuck printing an infinite number of
+irrationals *without reaching* the number we are interested in.
+
+Exercise 38
+-----------
+We have been watching a computer terminal. Is the order in
+which people come and use the terminal a total order?
+
+Yes, there is a first guy who uses it, and then people who use it alter.
+
+Exercise 39
+-----------
+Is it always possible to count the elements of a linear order?
+No, not if it does not have a least element.
+
+Exercise 40
+-----------
+Can a set that is not a well order be countable?
+Yes, easily, e.g. any finite set.
+
+10.8.5 Topological Sort
+=======================
+Computers are good at doing one task at a time, in sequence. When an algo-
+rithm is working on a data structure, it needs to know which element of the
+data structure to work on next. Often there is an order relation that must
+be followed (for example, we might want to output the items in a database in
+alphabetical order). If we have a total order on the elements of the data struc-
+ture, the algorithm can use that to find the next piece of work. If, however,
+we have only a partial order on the data items, then there are several possible
+orders in which items could be processed while still respecting the order rela-
+tion. Often we don’t care *which* order is used - we just want the algorithm to
+find one and proceed with the work.
+The process of taking a partial order and putting its elements into a total
+order is called *topological sorting*.
+
+Example 77
+----------
+Some compilers analyse the order in which procedures call each
+other. Such a compiler could construct a ‘dependency graph’ for the program
+it is translating, where each node corresponds to a procedure, and arcs in the
+graph correspond to procedure calls. The dependency graph is a partial order.
+Now, suppose the compiler generates object code for the procedures in the
+order of their appearance in the call graph, so that the lowest-level procedures
+are processed first and the highest level ones are done last, in order to make as
+many procedure calls as possible into forward references. The compiler uses a
+topological sort to produce the total order in which it prints the information.
+The first name in the total order will be a procedure that doesn’t call any other
+procedure, while the last is the top-level procedure with which the program
+starts execution.
+
+There is a simple and general algorithm for topological sorting. Choose $x$,
+one of the elements that is greatest in the set $A$, and make it the first in the
+sequence. Now do the same for the set $A - \\{x\\}$, and continue until $A$ is empty.
+
+Example 78
+----------
+Suppose that we have a relation that expresses the call graph:
+
+    {(’A’,’B’),(’B’,’B’),(’B’,’C’),(’B’,’D’),(’C’,’D’)}
+
+What would the topological sort of this graph be? First, the functions that
+call no other function would appear, followed by the functions that call them,
+followed by the functions calling them, etc. The result would be ’D’, ’C’,
+’B’, ’A’ (Figure 10.24).
+
+![Figure 10.24](./images/fig.10.24.jpg)
+
+Example 79
+----------
+What is the topological sort of $\\{(1,2),(1,3)\\}$ given the nodes
+1,2,3? The sequence 3,2,1 or 2,3,1.
+
+> topsort :: (Ord a, Show a) => Digraph a -> Set a
+> topsort dig = fromList $ topsort' $ filterUnrelated dig where
+>    filterUnrelated (Set xs, Set rel) = 
+>        (Set xs, Set $ filter (\(x,y) -> x `elem` xs && y `elem` xs) rel)
+>    topsort' (_, Set []) = []
+>    topsort' dig@(Set n, Set rel) = case greatestSet dig of
+>          Set []     -> []
+>          Set (x:xs) -> let rel' = Set $ filter ((/= x) . snd) rel
+>                            n'   = Set $ filter (/= x) n
+>                        in  x : topsort' (n', rel')
+
+
+Exercise 41
+-----------
+Check to see that the following partial orders are not, in fact, total orders.
+Use the computer to generate a total order, using a topological sort.
+
+    topsort ([1,2,3,4], [(1,2),(1,3),(2,3),(1,4),(2,4),(1,1),(2,2),(3,3),(4,4)])
+        -- not total, because there is no (3,4) pair
+        -- total ordering: {1,2,3,4}
+    
+    topsort ([1,2,3], [(1,2),(1,3),(1,4),(1,1),(2,2),(3,3)])
+        -- not total, no (2,3) pair
+        -- total ordering: {1, 2, 3} or {1, 3, 2}
+
+10.9 Equivalence Relations
+==========================
+Some relations can be used to break a set up into several categories or ‘parti-
+tions’, where each element of the set belongs to just one of the categories. Such
+a relation is called an *equivalence relation*.
+
+Example 80
+----------
+In organising a personal telephone list, it is convenient to or-
+ganise the set $S$ of people’s names into 26 sets corresponding to the first letter
+in the name. In other words, we are making a section of the telephone list for
+each letter of the alphabet.
+
+Equivalence relations are like asking "is some property of a equal to some property of b?".
+Above would be, "is the first letter of name equal to [a..z]?". Some equivalence relations
+can be used for categorizing. In a category, everything is in the same category as itself
+(reflexive). Also if $a$ is in the same category as $b$, then the reverse is true (symmetric).
+Finally, if $a$ and $b$ are in the same category, and $b$ and $c$ are in the same category,
+then $a$ and $c$ is in the same category (transitive).
+
+Definition 57
+-------------
+A binary relation $R$ over a set $A$ is an $equivalence relation$ if
+it is reflexive, symmetric, and transitive.
+
+Example 82
+----------
+Suppose that everyone in the database lives in a real location
+somewhere in the world. We can represent the world as a map, and then
+partition the map into small areas by using a $LivesInSameLocationAs$ relation.
+
+The equivalence classes of a non-empty equivalence relation can be thought
+of as a *partition* of the set into disjoint subsets. Now we define this term
+formally:
+
+Definition 58
+-------------
+A *partition* $P$ of a non-empty set $A$ is a set of non-empty
+subsets of $A$ such that
+
+- For each subset $S_1$ and $S_2$ of $P$, either $S_1 = S_2$ or $S_1 ∩ S_2 = Ø$
+- $A = ⋃_{S ∈ P} S$.
+
+Example 83
+----------
+For example, let’s consider the set of people’s last names and
+the relation `HasNameStartingWithSameLetterAs`. This relation divides the set
+into 26 subsets. There can be no overlaps between the subsets, and the set of
+names is the union of the subsets.
+
+A good example of an equivalence relation, which is frequently used in com-
+puting applications, comes from the mathematical *modulus* (mod) operation on
+integers. The expression $e\ mod\ k$ gives the remainder produced when dividing
+$e$ by $k$; and the value of $e\ mod\ k$ is a number between 0 and $k - 1$. Now, every
+number $x$ which is a multiple of $k$ will have the property that $x\ mod\ k = 0$,
+and we can build a set of all these numbers. Similarly, there is a set of numbers
+that have the same remainder when divided by 1, by 2, and so on when divided
+by $k$. To do this, we define the congruence relation as follows:
+
+Definition 59
+-------------
+Let $k$ be a positive integer, and let $a$ and $b$ be integers. If
+there is an integer $n$ such that
+$$
+(a - b) = n × k
+$$
+then $a$ is congruent to $b$ (modulo $k$). The mathematical notation for this
+statement is
+$$
+a ≡ b\ (\text{mod } k)
+$$
+
+It is necessary to ensure that $k$ is a positive integer - positive means greater
+than 0 - in order to avoid dividing by 0. We can define a relation, called the
+congruence relation, for all $k$:
+
+Definition 60
+-------------
+The congruence relation $C_k$ is defined for all natural $k$ such
+that $k > 0$, as follows: $aC_kb$ if and only if $a ≡ b (mod k)$.
+The congruence relation is useful because it is an equivalence relation:
+
+Theorem 75
+----------
+For all natural $k > 0$, the congruence relation $C_k$ is an equivalence relation
+
+Example 85
+----------
+Consider partitioning the integers by congruence ($C_3$) (See figure 10.25).
+This gives rise to three sets: all the integers that are of the form $n × 3$
+(this is just the set of multiples of 3), and the integers of the form $n × 3 + 1$,
+and the integers of the form $n × 3 + 2$.
+
+![Figure 10.25](./images/fig.10.25.jpg)
+
+The following functions create the smallest
+possible equivalence relation from a digraph and determine whether a given
+relation is an equivalence relation. They do this by taking a digraph and
+calculating its transitive symmetric reflexive closure.
+
+> equivalenceRelation :: (Ord a) => Digraph a -> Digraph a
+> equivalenceRelation dig = (transitiveClosure . symmetricClosure . reflexiveClosure) dig
+>
+> isEquivalenceRelation :: (Ord a) => Digraph a -> Bool
+> isEquivalenceRelation r = and [isTransitive r, isSymmetric r, isReflexive r]
+
+Exercise 42
+-----------
+Eval and check with computre
+
+    equivalenceRelation ([1,2], [(1,1),(2,2),(1,2),(2,1)]) -- id
+    equivalenceRelation ([1,2,3], [(1,1),(2,2)]) -- ([1,2,3], [(1,1),(2,2),(3,3)])
+
+    isEquivalenceRelation ([1,2], [(1,1),(2,2),(1,2),(2,1)]) -- yes
+    isEquivalenceRelation ([1], []) -- no, not reflexive
+
+Exercise 43
+-----------
+Does the topological sort require that the graph's relation is a partial order?
+
+Nope
+
+Exercise 44
+-----------
+Can the graph given to a topological sort have cycles?
+
+10.11 Review Exercises
+======================
+
+Exercise 45
+-----------
+Which of the following relations is an equivalence relation?
+
+- (a) InTheSameRoomAs - yes
+- (b) IsARelativeOf - no, but depends how it is defined
+- (c) IsBiggerThan - no
+- (d) The equality relation - yes
+
+Exercise 46
+-----------
+Given a non-empty antisymmetric relation, does its transitive closure ever contain
+symmetric arcs?
+
+Yes, that can happen, if there are cycles, e.g.
+
+    transitiveClosure ([1,2,3], [(1,2),(2,3),(3,1)]) -- ([1,2,3], [(1,2),(2,3),(3,1),(1,2),(2,1),(3,2),(1,3)])
+
+Exercise 47
+-----------
+What relation is both a quasi order and an equivalence relation?
+
+Only the empty relation.
+
+Exercise 48
+-----------
+Write a function that takes a relation and returns `True` if that
+relation has a power that is the given relation.
+
+> hasCyclicPower2 :: Ord a => Digraph a -> Bool
+> hasCyclicPower2 dig = let transitive = transitiveClosure dig
+>                      in  isCyclic transitive where
+>    isCyclic (Set xs, Set rel) = and [let z = (x,y) `elem` rel
+>                                      in  z |
+>                                          x <- xs, y <- xs]
+
+> hasCyclicPower :: (Show a, Ord a) => Digraph a -> Bool
+> hasCyclicPower dig@(set, rel) =
+>       any (== rel) [relationalPower dig n 
+>                       | n <- [2..(length $ toList $ rel) + 1]]
+
+Exercise 49
+-----------
+A quasi order is transitive and irreflexive. Can it have any symmetric loops in it?
+
+No. If it did, then the end of each loop would have to have a reflexive
+loop, because the relation is transitive. Thus it would not be irreflexive.
+
+Exercise 50
+-----------
+Given an antisymmetric irreflexive relation, could its transitive
+closure contain reflexive arcs?
+
+Yes, eg `[(1,2),(2,3),(3,1)] --> [(1,2),(2,3),(3,1),(1,3),(2,1),(3,2),(1,1),(2,2),(3,3)]`
+
+Exercise 51
+-----------
+Write a function that takes a relation and returns `True` if all of
+its powers have fewer arcs than it does.
+
+> fewerArcs :: Ord a => Digraph a -> Bool
+> fewerArcs (set,rel) = 
+>    all (< (length $ toList $ rel))
+>           [length $ toList $ (relationalPower (set,rel) n)
+>               | n <- [2..1 + (length $ toList $ domain rel)]]
+
+Exercise 52
+-----------
+Write a function that takes a relation and returns True if the
+relation is smaller than its symmetric closure.
+
+> smallerSymmetric :: Ord a => Digraph a -> Bool
+> smallerSymmetric (set, rel) =
+>    let (_, sym) = symmetricClosure (set, rel)
+>    in (length $ toList sym) < (length $ toList rel)
+
+Exercise 53
+-----------
+Given the partial order
+$$
+\\{(A,B),(B,C),(A,D)\\}
+$$
+which of the following is not a topological sort?
+
+    [D,C,B,A]
+    [C,B,D,A]
+    [D,C,A,B]
+
+The last one, because A cannot be weaker before B
+
+Exercise 54
+-----------
+Is a reflexive and symmetric relation ever antisymmetric as well?
+
+Yes, for example this is reflexive, symmetric, and antisymmetric:
+[(1,1),(2,2),(3,3)]
