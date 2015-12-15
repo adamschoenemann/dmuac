@@ -4,6 +4,7 @@
 > module Chapter10 where
 > import Chapter8
 > import Debug.Trace
+> import Test.QuickCheck
 
 10.1 Binary Relations
 =====================
@@ -602,7 +603,7 @@ Let $R_1 :: A × B$ be a relation from set $A$ to set $B$, and
 $R_2 :: B × C$ be a relation from set $B$ to set $C$. Their *relational composition*
 is defined as follows:
 
-$ R_1;R_2 :: A × C$  
+$ R_1;R_2 :: A × C$
 $ R_1;R_2 = \\{(a,c)\ |\ a ∈ A ∧ c ∈ C ∧ (∃b ∈ B. (a,b) ∈ R_1 ∧ (b,c) ∈ R_2)\\}$
 
 
@@ -660,7 +661,7 @@ The composition $R_1;R_1$ is worked out by deducing all the ordered pairs
 that correspond to an application of $R_1$ followed by an application of
 $R_1$.
 First we find all the ordered pairs of the form $(1,x)$. $R_1$ has only
-one ordered pair starting with 1; this is $(1,2)$. This means the first 
+one ordered pair starting with 1; this is $(1,2)$. This means the first
 application of $R_1$ goes from 1 to 2, and the $(2,3)$ pair means
 that the second application goes to 3. Therefore the composition
 $R_1;R_1$ should contain a pair $(1,3)$. Next, consider what happens
@@ -680,7 +681,7 @@ This is straightforward, yet tedious. We can write a function
 a new relation giving two existing ones, by working out all the ordered
 pairs in their relational composition.
 
-> relationalComposition :: (Ord a, Ord b, Ord c) 
+> relationalComposition :: (Ord a, Ord b, Ord c)
 >                       => Set (a,b) -> Set (b,c) -> Set (a,c)
 > relationalComposition (Set xs) (Set ys) = fromList $ concatMap fn xs where
 >    fn (x1,x2) = map (\(y1,y2) -> (x1,y2)) $ filter ((x2 ==) . fst) ys
@@ -701,7 +702,7 @@ $$
 $$
 Answer: $\\{(Alice, Carol)\\}$
 
-(b) $\\{(a,b),(aa,bb)\\}$ and $\\{(b,c), (cc,bb)\\}$  
+(b) $\\{(a,b),(aa,bb)\\}$ and $\\{(b,c), (cc,bb)\\}$
 Answer: $\\{(a,c)\\}$
 
 (c) $R;R$ where relation $R$ is defined as
@@ -710,7 +711,7 @@ R = \\{(1,2),(2,3),(3,4),(4,1)\\}
 $$
 Answer: $\\{(1,3),(2,4),(3,1),(4,2)\\}$
 
-(e) The empty set and any other relation.  
+(e) The empty set and any other relation.
 Answer: $\\{\\}$
 
 10.6 Powers of Relations
@@ -811,11 +812,11 @@ relational composition to follow algebraic laws that are similar to the correspo
 laws for powers on numer. For example, $R^{(a+b)} = R^a;R^b$.
 
 A relation whose domain is $\\{x_0, ..., x_{n-1}\\}$ is *cyclic* if it contains
-a cycle of ordered pairs of the form 
+a cycle of ordered pairs of the form
 $(x_0,x_1),(x_1,x_2),(x_2,x_3),(x_3,x_4),...,(x_{n-1},x_0)$.
 That is, the relation is cyclic if there is a cycle comprising all the elements
 of its domain.
-Consider what happens to a cyclic relation as we calculate its powers. The 
+Consider what happens to a cyclic relation as we calculate its powers. The
 relation is defined as
 $$
 R = \\{(a,b),(b,c),(c,a)\\}
@@ -912,7 +913,7 @@ It is also $\\{(2,2),(4,4)\\}$, because it is the identity relation.
 
 Exercise 20
 -----------
-What is the relationship between adding new ordered pairs to make a 
+What is the relationship between adding new ordered pairs to make a
 relation transitive and taking the power of a relation?
 
 Taking the power of a relation will take a relation "one step further" to making
@@ -961,7 +962,7 @@ In order to accomplish this we define *two* relations:
 1. A basic relation containing just the essential information
 2. A larger relation is dervied from the basic one by adding the ordered pairs
    required to give it the special properties that are needed.
-   
+
 When circumstances change, only the basic relation is edited by hand. The derived
 one is recalculated using a computer!
 
@@ -1014,7 +1015,7 @@ denotes the reflexive closure of $R$.
 
 Example 57
 ----------
-The reflexive closure of the relation $\\{(1,2),(2,3)\\}$ is 
+The reflexive closure of the relation $\\{(1,2),(2,3)\\}$ is
 $\\{(1,2),(2,3),(2,2),(3,3),(1,1)\\}
 
 The following theorem provides a straightforward method for calculating
@@ -1177,7 +1178,7 @@ relations:
     - ts: $t(s(R)) = t(\\{(a,b),(b,a)\\}) = \\{(a,b),(b,a),(a,a)\\}$
     - st: $s(t(R)) = s(\\{(a,b)\\}) = \\{(a,b),(b,a)\\}$
 - c. $\\{(1,1),(1,2),(1,3),(2,3)\\}$
-    - ts: 
+    - ts:
         $$
         t(s(R)) = t(\\{(2,1),(3,1),(3,2),(1,1),(1,2),(1,3),(2,3)\\}) = \\\
             \\{(2,2),(3,3),(2,1),(3,1),(3,2),(1,1),(1,2),(1,3),(2,3)\\}
@@ -1192,8 +1193,8 @@ relations:
 An order relation specifies an ordering that can be used to create a sequence
 from the elements of its domain. Order relations are extremely important
 in computing, because data values often need to be placed in a well-defined
-sequence for processing.  
-Examples: (<), (≤), (>) etc.  
+sequence for processing.
+Examples: (<), (≤), (>) etc.
 Always transitive. If $a$ is before $b$ and $b$ is before $c$, then $a$ is before $c$.
 
 10.8.1 Partial Order
@@ -1243,7 +1244,7 @@ Often we don't want to draw *all* the arcs of a relation, because there are so
 many, e.g. in a partial order.
 
 A *poset* (partially ordered set) diagram is a relation diagram for partial orders,
-where the distracting transitive and reflexive arcs are omitted. It is 
+where the distracting transitive and reflexive arcs are omitted. It is
 important to state explicitly that the diagarm shows a partial order (or a poset);
 without knowing this fact, a reader would not know that the relation also contains
 the reflexive and transitive arcs.
@@ -1314,7 +1315,7 @@ element in the relation and `False` otherwise.
 > isWeakest, isGreatest :: (Ord a) => Relation a -> a -> Bool
 > isWeakest = extremesFinder snd
 > isGreatest = extremesFinder fst
-> 
+>
 > extremesFinder :: (Ord a) => ((a,a) -> a) -> Relation a -> a -> Bool
 > extremesFinder ex (Set rel) x = incomparable || findExtreme where
 >     incomparable  = (length $ filter (\(y,z) -> y == x || z == x) noReflexive) == 0
@@ -1574,7 +1575,7 @@ What is the topological sort of $\\{(1,2),(1,3)\\}$ given the nodes
 
 > topsort :: (Ord a, Show a) => Digraph a -> Set a
 > topsort dig = fromList $ topsort' $ filterUnrelated dig where
->    filterUnrelated (Set xs, Set rel) = 
+>    filterUnrelated (Set xs, Set rel) =
 >        (Set xs, Set $ filter (\(x,y) -> x `elem` xs && y `elem` xs) rel)
 >    topsort' (_, Set []) = []
 >    topsort' dig@(Set n, Set rel) = case greatestSet dig of
@@ -1592,7 +1593,7 @@ Use the computer to generate a total order, using a topological sort.
     topsort ([1,2,3,4], [(1,2),(1,3),(2,3),(1,4),(2,4),(1,1),(2,2),(3,3),(4,4)])
         -- not total, because there is no (3,4) pair
         -- total ordering: {1,2,3,4}
-    
+
     topsort ([1,2,3], [(1,2),(1,3),(1,4),(1,1),(2,2),(3,3)])
         -- not total, no (2,3) pair
         -- total ordering: {1, 2, 3} or {1, 3, 2}
@@ -1764,7 +1765,7 @@ relation has a power that is the given relation.
 
 > hasCyclicPower :: (Show a, Ord a) => Digraph a -> Bool
 > hasCyclicPower dig@(set, rel) =
->       any (== rel) [relationalPower dig n 
+>       any (== rel) [relationalPower dig n
 >                       | n <- [2..(length $ toList $ rel) + 1]]
 
 Exercise 49
@@ -1787,7 +1788,7 @@ Write a function that takes a relation and returns `True` if all of
 its powers have fewer arcs than it does.
 
 > fewerArcs :: Ord a => Digraph a -> Bool
-> fewerArcs (set,rel) = 
+> fewerArcs (set,rel) =
 >    all (< (length $ toList $ rel))
 >           [length $ toList $ (relationalPower (set,rel) n)
 >               | n <- [2..1 + (length $ toList $ domain rel)]]
@@ -1822,3 +1823,62 @@ Is a reflexive and symmetric relation ever antisymmetric as well?
 
 Yes, for example this is reflexive, symmetric, and antisymmetric:
 [(1,1),(2,2),(3,3)]
+
+Exercise 55
+-----------
+Given a relation containing only a single path of length $n$, how
+many arcs can be added by its symmetric transitive closure?
+
+The transitive closure will add $(1 + 2 ... + (n - 1))$ paths,
+and the symmetric closure will double it, so it becomes
+$2 × (1 + 2 ... + (n - 1))$
+
+Exercise 56
+-----------
+Given a relation containing only a cycle of length $n$ containing
+all of the nodes in the domain, which power will be reflexive?
+
+$n$th power
+
+Exercise 57
+-----------
+Can we write a function that determines whether the equality relation
+over the positive integers is reflexive?
+
+It is, but we can't cause the positive integers is an infinite relation.
+
+Exercise 58
+-----------
+Why can't partial orders have cycles of length greater than 1?
+
+Then it would not be transient any more.
+
+Exercise 59
+-----------
+Is the last power of a relatio nalways the empty set?
+
+No, not if it repeats.
+
+Exercise 60
+-----------
+The following list comprehension gives the arcs of a poset diagram.
+What kind of order relation does the diagram represent?
+
+[(a,a+1) | a <- [1..]]
+
+a linear order
+
+Exercise 61
+-----------
+Is the composition of a relation containing only a single cycle
+with its converse the equality relation?
+
+    {(1,2),(2,1)};{(2,1),(1,2)} -- {(1,1),(2,2)}
+    So yes
+
+Exercise 62
+-----------
+Give examples of partial orders in which the set of greatest ele-
+ments is the same as the set of weakest elements.
+
+    The empty relation and the equality relation
