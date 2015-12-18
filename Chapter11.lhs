@@ -1,3 +1,6 @@
+> module Chapter11 where
+> import Chapter8
+
 11. Functions
 =============
 Input -> Result
@@ -297,7 +300,7 @@ To understand this kind of higher order function, it is helpful to study the
 function graph in detail. First, we define some first order functions to be used
 in the examples:
 
-> ident, doubly, triple, quadruple :: Int -> Int
+> ident, double, triple, quadruple :: Int -> Int
 > ident 1 = 1
 > ident 2 = 2
 > ident 3 = 3
@@ -520,3 +523,289 @@ impossible to write a Haskell function that determines whether another Haskell
 function is total or partial. However, we can introduce data structures to
 represent the graphs of partial functions, with an explicit value that represents
 $⊥$.
+
+This means that we need to use a new type to represent the result returned by
+a function, called `FunVals`. This type has two kinds of element. The first is
+`Undefined`, which means that the result value is `⊥`. The other is called `Value`,
+and takes an argument that is the actual value returned by the function.
+
+> data FunVals a = Undefined | Value a deriving (Show, Eq)
+
+Now we can define a predicate that returns True if its argument is a partial
+function (in other words if some member of its result type is undefined), and
+False otherwise:
+
+> isPartialFunction :: (Ord a, Ord b) => Set a -> Set b -> Set (a, FunVals b) -> Bool
+> isPartialFunction (Set argT) (Set resT) (Set fun) =
+>    let isUndefined x =
+>           let maps = filter ((x ==) . fst) fun
+>           in  (length maps == 0) || any ((== Undefined) . snd) maps
+>    in
+>    any isUndefined argT
+
+There is also `isFun` that takes a relation, and determines whether the relation is also
+a function
+
+> isFun :: (Ord a, Ord b) => Set a -> Set b -> Set (a, FunVals b) -> Bool
+> isFun (Set argT) (Set resT) (Set fun) =
+>    let pairs x = filter ((== x) . fst) fun
+>        onlyOne pairs = length pairs == 1
+>        sameResults [] = True
+>        sameResults pairs =
+>           let (_, v) = head pairs
+>           in all ((== v) . snd) (tail pairs)
+>    in all (\x -> let p = pairs x in onlyOne p || sameResults p) argT
+
+Exercise 1
+----------
+Decide whether the following functions are partial or total, and then run the
+tests on the computer:
+
+(a):
+
+    isPartialFunction
+        [1,2,3] [2,3] [(1, Value 2), (2, Value 3), (3, Undefined)]
+    -- Yeap!
+
+(b):
+
+    isPartialFunction (Set [1,2]) (Set [2,3]) (Set [(1, Value 2), (2, Value 3)])
+    -- False!
+
+Exercise 2
+----------
+Work out the following expressions, by hand and using the computer:
+
+    isFun (Set [1,2,3]) (Set [1,2]) (Set [(1, Value 2), (2, Value 2)]) -- Yes
+    isFun (Set [1,2,3]) (Set [1,2]) (Set [(1,Value 2),(2,Value 2),
+                                          (3,Value 2),(3,Value 1)]) -- Nope
+    isFun (Set [1,2,3]) (Set [1,2]) (Set [(1,Value 2), (2,Value 2), (3,Value 2)]) -- Yes
+
+Exercise 3
+----------
+What is the value of `mystery x` where `mystery` is defined as:
+
+> mystery :: Int -> Int
+> mystery x = if mystery x == 2 then 1 else 3
+
+Well, that depends on `x`, but its graph looks like this
+
+    {(-Inf,1),(-Inf + 1, 1), ... (1,3),(2,1),(3,1),(4,1) ... (Inf,1)}
+
+Exercise 4
+----------
+What is the value of `mystery2 x` where `mystery2` is defined as
+
+> mystery2 :: Int -> Int
+> mystery2 x = if x == 20 then 2 + mystery2 x else 3
+
+$$
+\begin{align}
+∀x. x ≠ 20 \quad & → \quad \mathtt{mystery2\ x} = 3 \\\
+∀x. x = 20 \quad  & → \quad \mathtt{mystery2\ x} = ⊥
+\end{align}
+$$
+
+11.5 Function Composition
+=========================
+- "Pipeline" functions
+- Computation as a sequence of function applications
+    - output of $f_1$ is input of $f_2$
+
+Definition 69
+-------------
+Let $g :: a → b$ and $f :: b → c$ be functions. Then the *composition* of $f$ with $g$,
+written $f ∘ g$ as a function such that:
+$$
+\begin{align}
+(f ∘ g)    \quad& :: \quad a → c \\\
+(f ∘ g)\ x \quad& =  \quad f\ (g\ x)
+\end{align}
+$$
+
+Theorem 77
+----------
+Functional composition $(∘)$ is associative. That is, for all functions
+$h :: a → b, g :: b → c, f :: c → d,$
+$$
+f ∘ (g ∘ h) = (f ∘ g) ∘ h
+$$
+and both sides of the equation have type $a → d$.
+
+*Proof*. Choose arbitrary $x :: a$, and use *equational reasoning* to prove that
+$$
+(f ∘ (g ∘ h))\ x = ((f ∘ g) ∘ h)\ x
+$$
+
+$$
+\begin{align}
+  & (f ∘ (g ∘ h))\ x \\\
+= & f\ ((g ∘ h)\ x) \\\
+= & f\ (g\ (h\ x)) \\\
+= & (f ∘ g)\ (h\ x) \\\
+= & ((f ∘ g) ∘ h)\ x
+\end{align}
+$$
+
+This means we can omit parentheses totally when writing compositions.
+But we need parentheses when applying the function
+
+- incorrect: $f ∘ g ∘ h ∘ i\ x$
+- correct: $(f ∘ g ∘ h ∘ i)\ x$
+
+Exercise 7
+----------
+Functions are often composed with each other in order to form a
+pipeline that processes some data. What does the following expression
+do?
+
+    ((map (+ 1)) . (map snd)) xs
+
+for each `x` in `xs`, get the second element and add one to 1
+
+Exercise 8
+----------
+Sometimes access to deeply nested constructor expressions is performed by
+function composition. What is the value of this expression?
+
+    (fst . snd . fst) ((1, (2, 3)), 4)
+    -- fst1 = (1, (2,3))
+    -- snd  = (2,3)
+    -- fst2 = 2
+
+11.6 Properties of Functions
+============================
+We have used four sets to characterise a function: the argument type, the
+domain, the result type, and the image. There are several useful properties
+of functions that concern these four sets, and we will examine them in this
+section.
+
+11.6.1 Surjective Functions
+===========================
+A surjective function has an image that is the same as its result type (sometimes
+called the range). Thus the function can, given suitable input, produce any of
+the elements of the result type.
+
+Definition 71
+-------------
+A function $f$ is *surjective* if
+$$
+∀b ∈ B.\ (∃a ∈ A. f\ a = b)
+$$
+
+Most, if not all, functions that return a Boolean result are surjective - only 2
+values inhabit the Boolean type, True and False, and most boolean functions return
+either True or False.
+
+Example 114
+-----------
+The `times_two` function takes an integer and doubles it. It is **not** surjective
+because its image is the set of all even integers, while its type is all integers.
+
+The function `isSurjective` takes a graph representation of a function and
+determines whether it is surjective.
+
+> isSurjective :: (Ord a, Ord b) => Set a -> Set b -> Set (a, FunVals b) -> Bool
+> isSurjective (Set argT) (Set resT) (Set graph) =
+>    let image g = let extract (Value x) = x in map (extract . snd) g
+>    in (Set resT) == (Set $ image graph)
+
+Exercise 9
+----------
+Decide whether the functions represented by the graphs in the following
+examples are surjective, and then check with the computer
+
+    isSurjective (Set [1,2,3]) (Set [4,5]) (Set [(1, Value 4), (2, Value 5), (3, Value 4)])
+        -- True
+    isSurjective (Set [1,2,3]) (Set [4,5]) (Set [(1, Value 4), (2, Value 4), (3, Value 4)])
+        -- False
+
+Exercise 10
+-----------
+Which of the following functions are surjective?
+
+- (a) $ f :: A → B$ where $A = \\{1,2\\}, B = \\{2,3,4\\}$ and $f = \\{(1,2),(2,3)\\}$
+- (b) $g :: C → D$, where $C = \\{1,2,3\\}, D = \\{1,2\\}$ and $g = \\{(1,1), (2,1), (3,2)\\}$
+
+Not a
+b is
+
+Exercise 11
+-----------
+Which of the following functions are *not* surjective, and why?
+
+- (a) `map increment :: [Int] -> [Int]`
+- (b) `take 0 :: [a] -> [a]`
+- (c) `drop 0 :: [a] -> [a]`
+- (d) `(++) xs :: [a] -> [a]`
+
+a is surjective, because every `[Int]` has another `[Int]` where each element is 1 smaller.
+b is **not** surjective, because its result is always `[]`, which is not the only member of `[a]`
+c is surjective, because it is equivalent to `id` for `[a]`
+d is also surjective, I would say.
+
+11.6.2 Injective Functions
+==========================
+- A function maps each element of its domain to *exactly one* element of the image.
+- An *injective* function has a similar property
+    - each element of the image is the result of applying the function to *exactly one*
+      element of the domain.
+
+Definition 72
+-------------
+The function $f :: A → B$ is injective if
+$$
+    ∀a,a' ∈ A. a ≠ a' → f a ≠ f a'
+$$
+
+Example 124
+-----------
+The following Haskell functions are injective:
+
+    (/\) True :: Bool -> Bool
+    increment :: Int -> Int
+    id :: a -> a
+    times_two :: Int -> Int
+
+We can write the follwing Haskell function to check for injectiveness
+
+> isInjective :: (Ord a, Ord b) => Set a -> Set b -> Set (a, FunVals b) -> Bool
+> isInjective (Set argT) (Set resT) (Set graph) =
+>    let apply x = case lookup x graph of
+>                       Just x' -> x'
+>                       Nothing -> Undefined
+>        outer a =
+>            let inner a' = if a /= a' then apply a /= apply a' else True
+>            in all inner argT
+>    in all outer argT
+
+Exercise 12
+-----------
+Determine whether the functions in these examples are injective,
+and check your conclusions using the computer:
+
+(a)
+
+    isInjective (Set [1,2,3]) (Set [2,4]) (Set [(1,Value 2),(2,Value 4),(3,Value 2)])
+    -- False
+
+(b)
+
+    isInjective (Set [1,2,3]) (Set [2,3,4]) (Set [(1,Value 2),(2,Value 4),(3,Undefined)])
+    -- True
+
+Exercise 13
+-----------
+Which of the following functions are injective?
+
+- (a) $f :: A → B$, where $A = \\{1,2\\}, B = \\{1,2,3\\}$ and $f = \\{(1,2), (2,3)\\}$
+- (b) $g :: C → D$, where $C = \\{1,2,3\\}, D = \\{1,2\\}$ and $g = \\{(1,1), (2,2)\\}$
+
+Both? Even though b is partial
+
+Exercise 14
+-----------
+Suppose that $f :: A → B$ and $A$ has more elements than $B$.
+Can $f$ be injective?
+
+Yes, if $f$ is partial. If $f$ is total, then it cannot.
