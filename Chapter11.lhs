@@ -809,3 +809,207 @@ Suppose that $f :: A → B$ and $A$ has more elements than $B$.
 Can $f$ be injective?
 
 Yes, if $f$ is partial. If $f$ is total, then it cannot.
+
+11.6.3 The Pigeonhole Principle
+===============================
+If $A$ and $B$ are finite sets, where $|A| > |B|$, then no injection exists from
+$A$ to $B$.
+
+- Each element of $A$ must have a unique transformation in $B$.
+    - "At most one pigeon fits in a pigeonhole".
+- Frequently used in set theory proofs, especially proofs of theorems about functions.
+
+Theorem 78 (Pigeonhole Principle)
+=================================
+Let $A$ and $B$ be finite sets, such that $|A| > |B|$ and $|A| > 1$.
+Let $f :: A → B$. Then
+$$
+∃a_1,a_2 ∈ A. (a_1 ≠ a_2) ∧ (f\ a_1 = f\ a_2)
+$$
+
+11.7 Bijective Functions
+========================
+
+Definition 73
+-------------
+A function is *bijective* if it is both surjective and injective. An
+alternative name for 'bijective' is *one-to-one and onto*. A bijective
+function is sometimes called a *one-to-one correspondence*.
+
+![Figure 11.10](./images/fig.11.10.jpg)
+
+The domain and image of a bijective function must have the same number of
+elements. Thsi is stated formally in the following theorem:
+
+Theorem 79
+----------
+Left $f :: A → B$ be a bijective function.
+Then $|\text{domain}\ f| = |\text{image}\ f|$.
+
+*Proof*. Suppose that the domain A is larger than the image B. Then f cannot
+be injective, by the Pigeonhole Principle. Now suppose that B is larger than
+A. Then not every element of B can be paired with an element of A: there are
+too many of them, so f cannot be surjective. Thus a function is bijective only
+when its domain and image are the same size.
+
+A bijective function must have a domain and image that are the same
+size, and it must also be surjective and injective.
+
+In Haskell, we can express this as a function that takes a domain,
+codomain and a function, and determines whether the function is bijective.
+
+> isBijective :: (Ord a, Ord b) => Set a -> Set b -> Set (a, FunVals b) -> Bool
+> isBijective a@(Set argT) r@(Set resT) f@(Set fun) =
+>    let lengths = length argT == length resT
+>        inj = isInjective a r f
+>        sur = isSurjective a r f
+>    in
+>    lengths && inj && sur
+
+Exercise 15
+-----------
+Determine whether the following functinos are bijective,
+and check your conclusions using the computer.
+
+    isBijective (Set [1,2]) (Set [3,4]) (Set [(1, Value 3), (2, Value 4)])
+        -- Yes!
+    isBijective (Set [1,2]) (Set [3,4]) (Set [(1, Value 3), (2, Value 3)])
+        -- No! Not surjective
+
+11.7.1 Permutations
+===================
+
+Definition 74
+-------------
+A *permutation* is a bijective function $f :: A → A$, i.e. it must have
+the same domain and image.
+
+Example 128
+-----------
+The identity function is a permutation.
+
+The only thing a permutation function can do is to shuffle its input; it cannot
+produce any results that do not appear in its input.
+
+Example 129
+-----------
+Let $A = \\{1,2,3\\}$ and let $f :: A → A$ be defined by the graph
+$\\{(1,2),(2,3),(3,1)\\}$. Then $f$ is a permutation.
+
+Example 130
+-----------
+Let $X = [x_1 ,x_2 ,...,x_n ]$ be an array of values, and let $Y =
+[y_1 ,y_2 ,...,y_n]$ be the result of sorting $X$ into ascending order. Define $A =
+\\{1,2,...,n\\}$ to be the set of indices of the arrays $X$ and $Y$ . We can define a
+function $f :: A → A$ that takes the index of a data value in $X$ and returns the
+location of that same data value in $Y$ . Then $f$ is a permutation.
+Sometimes it is convenient to think of a permutation as a function that
+reorders the elements of a list; this is often simpler and more direct than defining
+a function on the indices. For example, it is natural to say that a sorting
+function has type $[a] → [a]$. Technically, the function $f$ used in Example 130 is
+a permutation. The following definition provides a convenient way to represent
+a permutation as a function that reorders the elements of a list:
+
+Definition 75
+-------------
+A *list permutation function* is a function $f :: [a] → [a]$ takes a list
+of values and rearranges them using a permutation $g$, such that
+$$
+xs\ !!\ i = (f\ xs)\ !!\ (g\ i)
+$$
+
+Example 131
+-----------
+The functions `sort` and reverse are `list` permutation func-
+tions.
+
+If you rearrange a list of values and then rearrange them again, you sim-
+ply end up with a new rearrangement of the original list, and that could be
+described directly as a permutation. This idea is stated formally as follows:
+
+Theorem 80
+----------
+Let $f,g :: A → A$ be permutations. Then their composition
+$f ◦ g$ is also a permutation.
+
+The following Haskell function determines whether a function is a permutation.
+
+> isPermutation :: (Ord a) => Set a -> Set a -> Set (a, FunVals a) -> Bool
+> isPermutation argT resT fun =
+>    argT == resT && isBijective argT resT fun
+
+Exercise 16
+-----------
+Let $A = \\{1,2,3\\}$ and $f :: A → A$, where $f = \\{(1,2),(2,1),(3,2)\\}$
+Is $f$ bijective? Is it a permutation.
+
+Yes, and yes.
+
+Exercise 17
+-----------
+Determine whether the following functons are permutations, and check
+them using the computer.
+
+    isPermutation
+        (Set [1,2,3])
+        (Set [1,2,3])
+        [(1, Value 2), (2, Value 3), (3, Undefined)]
+    -- No, because it is not suerjective
+
+    IsPermutation
+        (Set [1,2,3])
+        (Set [1,2,3])
+        [(1, Value 2), (2, Value 3), (3, Value 1)]
+    -- Yes!
+
+Exercise 18
+-----------
+Is `f`, defined below, a permutation?
+
+    f :: Integer -> Integer
+    f x = x + 1
+
+Yes
+
+Exercise 19
+-----------
+Suppose we know that the composition $f ∘ g$ of the functions
+$f$ and $g$ is surjective. Show that $f$ is surjective.
+
+Since $(f ∘ g)\ x = f\ (g\ x)$, then $f$ must be surjective if $f ∘ g$
+is surjective.
+
+11.7.2 Inverse Functions
+========================
+A function $f :: A → B$ takes an argument $x :: A$ and gives the result $(f x) :: B$.
+The inverse of the function goes the opposite direction: given a result $y :: B$,
+it produces the argument $x :: A$, which would cause $f$ to yield the result $y$.
+
+Not all functions have an inverse. For example, if both $(1,5)$ and $(2,5)$ are
+in the graph of a function, the nthere is no unique argument that yields 5.
+Therefore, the definition of inverse requries teh function to be a bijection.
+
+Definition 76
+-------------
+Let $f :: A \->  B$ be a bijection. Then the *inverse* of $f$, denoted
+$f^{-1}$, has type $f^{-1} :: B → A$, and its graph is
+$$
+\\{(y,x)\ |\ ∃x,y. (x,y) ∈ f \\}
+$$
+
+Example 132
+-----------
+Let $A = \\{1,2,3\\}, B = \\{4,5,6\\}$ and let $f :: A → A$ have the graph
+$\\{(1,4),(2,5),(3,6)\\}$. Then its inverse is $f^{-1} = \\{(4,1),(5,2),(6,3)\\}$
+
+Example 133
+-----------
+The Haskell function `decrement` is the inverse of `increment`.
+Similarly, `increment` is the inverse of `decrement`.
+
+Exercise 20
+-----------
+Suppose that $f :: A → A$ is a permutation. What can you say about
+$f^{-1}$?
+
+It will also be a permutation.
