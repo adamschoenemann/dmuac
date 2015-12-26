@@ -707,7 +707,8 @@ determines whether it is surjective.
 
 > isSurjective :: (Ord a, Ord b) => Set a -> Set b -> Set (a, FunVals b) -> Bool
 > isSurjective (Set argT) (Set resT) (Set graph) =
->    let image g = let extract (Value x) = x in map (extract . snd) g
+>    let image = map extract . filter (/= Undefined) . map snd
+>        extract (Value x) = x
 >    in (Set resT) == (Set $ image graph)
 
 Exercise 9
@@ -1013,3 +1014,320 @@ Suppose that $f :: A → A$ is a permutation. What can you say about
 $f^{-1}$?
 
 It will also be a permutation.
+
+11.8 Cardinality of Sets
+========================
+- "The number of elements of a set"
+- Bijections are good for reasoning about the sizes of sets.
+- A bijection is often called a one-to-one correspondence.
+- If there is a bijection $f :: A → B$, then it is possible to
+  associate each element of $A$ with exactly one element of $B$,
+  and vice versa.
+- Counting a set can be thought of as associating 1 with an element,
+  2 with another, 3 with one more and so on.
+    - When all elements are associated with the number, the last
+      element's number is the size of the set.
+    - Thus, the number of objects in $S$ is $n$, if there is a bijection
+      $f :: \\{1,2,...,n\\} → S$.
+      - This is used to formally define the size of a set, which is called
+        its *cardinality*
+
+Definition 77
+-------------
+A set $S$ is *finite* if and only if there is a natural number $n$ such
+that there is a bijection mapping the natural numbers $\\{0,1,...,n-1\\}$ to $S$.
+The *cardinality* of $S$ is $n$, and it is written as $|S|$.
+
+- If $S$ is finite, then it can be counted, and the result of the count
+  is its cardinality (i.e. the number of elements in contains).
+- How do we define a set to be infinite?
+    - Cannot say that that $|S|$ is infinity, because infinity is not
+      a natural number.
+    - Consider a one-to-one correspondence (bijection) from the set $N$ of
+      natural numbers and the set $E$ of even numbers.
+      $$
+      \begin{align}
+        0\quad 1\quad 2\quad 3\quad 4\quad ... \\\
+        0\quad 2\quad 4\quad 6\quad 8\quad ...
+      \end{align}
+      $$
+    - We can calc the *i*th elem of the 2nd row by applying $f$ to the $i$th
+      elem of the first row, where $f :: N → E$ is defined b $f\ x = 2 × x$
+    - $f$ is injective, and $E ⊂ N$ (*proper* subset).
+    - It would be impossible to find an $f$ with these properties for a finite set
+
+Definition 78
+-------------
+A set $A$ is *infinite* if there exists an injective function $f :. A → B$
+such that $B$ is a proper subset of $A$.
+
+We can use the proeprties of a function over a finite domain $A$ and a result
+type $B$ to determine their relative cardinalities:
+
+- If $f$ is a surjection then $|A| ≥ |B|$.
+- If $f$ is an injection then $|A| ≤ |B|$.
+- If $f$ is a bijection then $|A| = |B|$.
+
+Earlier we discussed counting the elements of a finite set, placing its ele-
+ments in a one-to-one correspondence with the elements of $\\{1,2,...,n\\}$. Even
+though there is no natural number n which is the size of an infinite set, we can
+use a similar idea to define what it means to say that two sets have the same
+size, *even if they are infinite*:
+
+Definition 79
+-------------
+Two set $A$ and $B$ have the same cardinality if there is a bijection
+$f :: A → B$.
+
+Example 134
+-----------
+Let $A = \\{1,2,3\\}$ and $B = \\{cat,mouse,rabbit\\}$. Define $f ::
+A → B$ as
+$f = \\{(1,cat),(2,mouse),(3,rabbit)\\}$.
+Now $f$ is surjective and injective (you should check this), so it is a bijection.
+Hence the cardinality of B is
+$$
+|B| = 3.
+$$
+The previous example may look unduly complicated, but the point is that
+exactly the same technique can be used to investigate the sizes of infinite sets.
+
+Example 135
+-----------
+We can place the set I of integers into one-to-one correspon dence
+with the set $N$ of natural numbers:
+$$
+\begin{align}
+N = & 0\quad  1\quad 2\quad  3\quad 4\quad  5\quad 6\quad ... \\\
+I = & 0\quad −1\quad 1\quad −2\quad 2\quad −3\quad 3\quad ...
+\end{align}
+$$
+
+This is done with the function $f :: I → N$, defined as:
+$$
+f\ x =
+\begin{cases}
+2 × x, & \mbox{if } x ≥ 0 \\\
+−2 × x − 1, & \mbox{if } x < 0
+\end{cases}
+$$
+Now $f$ is a bijection (you should check that it is), so $I$ has the same cardinality
+as $N$.
+We have already established that the cardinality of the set of even numbers
+is the same as the cardinality of $N$, so this is also the same as the cardinality
+of $I$. The size of the set of integers is the same as the size of the set of integers
+that are non-negative and even!
+
+Definition 80
+-------------
+A set $S$ is *countable* if and only if there is a bijection $f :: N → S$
+
+A set is countable if it has the same cardinality as the set of natural numbers.
+In daily life, we use the word *counting* to describe the process of enumerating
+a set with $1,2,3,...$, so it is natural to call a set countable if it can be
+enumerated - even if the set is infinite.
+
+Exercise 21
+-----------
+Explain why there cannot be a finite set that satisifies Definition 78.
+
+Because then $f$ cannot be injective while $B ⊂ A$.
+
+Exercise 22
+-----------
+Suppose that your manager gave you the task of writing a program that
+determined whether an arbitrary set was finite or infinte.
+Would you accept it? Explain why or why not.
+
+Nope, it is impossibruh! We cannot proof a set is infinite by enumerating it
+programatically.
+
+Exercise 23
+-----------
+Suppose that your manager asked you to write a program that decided whether
+a function was a bijection. How would you respond?
+
+Also impossible, unless it is only restricted to functions with finite and
+countable argument- and result-types.
+
+11.8.1 The Rational Numbers Are Countable
+=========================================
+- Some inifinite sets are countable, others are not
+- We can often print out the elements of a countable set
+    - If set is infinite, we will never print the entire set but any
+      element is guaranteed to be reached at some point.
+- If an infinite set is not countable, we can not even guarantee that
+  a given element will eventually be printed.
+
+- Consider the rational numbers (numbers of the form $x/y$, where $x,y$ are integers).
+- We want to enumerate all the ratios
+    - We need to put them in a one-to-one correspondence with $N$.
+- We create a series of columns, each with an index $n$ indicating its place
+  in the series.
+    - A column gives all possible fractions with $n$ as the numerator.
+
+$$
+\begin{array}
+((1,1) &       &       &       &       \\\
+(1,2) & (2,1) &       &       &       \\\
+(1,3) & (2,2) & (3,1) &       &       \\\
+(1,4) & (2,3) & (3,2) & (4,1) &       \\\
+(1,5) & (2,4) & (3,3) & (4,2) & (5,1) \\\
+  .   &   .   &   .   &   .   &   .   \\\
+  .   &   .   &   .   &   .   &   .   \\\
+  .   &   .   &   .   &   .   &   .
+\end{array}
+$$
+
+Every line in this sequence is finite, so it can be printed completely before
+the next line is started. Each time a line is printed, progress is made on all of
+the columns and a new one is added. Every ratio will eventually appear in the
+enumeration. Thus the set $Q$ of rational numbers can be placed in one-to-one
+correspondence with $N$, and $Q$ is countable.
+
+Exercise 24
+-----------
+Create the above definition in Haskell, and use it with the following two
+expressions
+
+    take 3 rationals
+    take 15 rationals
+
+> rationals :: [[(Int, Int)]]
+> rationals = [(1,1)] : map rationals' rationals where
+>       rationals' prev =
+>           let (z,_) = last prev
+>           in  map (\(x,y) -> (x,y+1)) prev ++ [(z+1,1)]
+
+
+11.8.2 The Real Numbers Are Uncountable
+- If $A ⊆ B$ we cannot say that $B$ is larger than $A$, since they
+might be equal.
+- Surprisingly, even if we know $A ⊂ B$ we *still* cannot say that
+  $B$ has more elements
+    - It is possible that both are infinite but countable.
+    - Example: The set of even numbers is a proper subset of the naturals,
+      yet both sets have same cardinality!
+- Some infinite sets are not countable.
+    - So much bigger than the naturals that there is no possible way
+      to make a one-to-one correspondence between it and the naturals.
+    - The Reals have this prop.
+    - There is a technique called *diagonalisation* which is useful for
+      showing that one infinte set has a larger cardinality than another.
+
+- Consider a real to be a string of digits.
+- E.g. $x$ such that $0 ≤ x < 1$
+    - Written in the form $.d_0 d_1 d_2 d_3 ...$
+    - There is no limit to the length of this string of digits.
+- Suppose there is a way to make a one-to-one correspondence with the set
+  of natural numbers (i.e. suppose the reals are countable)
+- Then we can make a table where the $i$th row contains the $i$th real
+  number $x_i$, and it contains the list of digits comprising $x_i$
+- Name the digits in that dist $d_{i,0}\ d_{i,1}\ d_{i,2} ...$.
+- Thus $d_{i,j}$ means the $jth$ digit in the decimal representation of the
+  $i$th real number $x_i$.
+- Here is the table that allegedly contains a complete enumeration of the
+  set of real numbers:
+  $$
+  \begin{array}
+    .d_{00} & d_{01} & d_{02} & d_{03} & ... \\\
+    .d_{10} & d_{11} & d_{12} & d_{13} & ... \\\
+    .d_{20} & d_{21} & d_{22} & d_{23} & ... \\\
+    ...     & ...    & ...             & ...
+  \end{array}
+  $$
+- Now, we will show that this list is incomplete by constructing a new
+  real number $y$ which is definitely not in the list.
+- $y$ also has a decimal representation, which we call
+  $.d_{y0}\ d_{y1}\ d_{y2} ...$
+- Now, ensure that $y$ is different from $x_0$, and it is sufficient to make the
+  0th digit of $y$ (i.e. $d_{y0})$ different from the corresponding digit of $x_0$
+  (i.e. $d_{00}).
+- Do this by defining a function $different\ :: Digit → Digit$
+- Can be done in many different ways, here is one:
+  $$
+  different\ x =
+  \begin{cases}
+    0, & \mbox{if } x ≠ 0 \\\
+    1, & \mbox{if } x =  0
+  \end{cases}
+  $$
+- Doesn't matter exactly how it is defined, as long as it returns a digit
+  that is diff from its argument.
+- We must ensure that $y$ is different from $x_i$ for *every* $i ∈ N$, not
+  just $x_0$.
+- Easy, just make the $i$th digit of $y$ different from the $i$th digit og $x_i$
+- $$
+  d_{yi} = different\ x_{ii}
+  $$
+- Now we have defined a number $y$ that is real and different from $x_i$ for any
+  $i$.
+- Construction of $y$ is independent of enumeration of $x_i$
+    - For *any alleged enumeration whatsoever* of the real numbers, our construction
+      will give a new real number that is not in that list.
+- Thus, it is impossible to set up a one-to-one correspondence between $R$ and
+  $N$.
+- The conclusion is thus that the reals are infinite and uncountable.
+
+11.10 Review Exercises
+======================
+Exercise 25
+-----------
+A program contains the expression `(f . g) x`
+
+(a) Suppose that when this is evaluated, the `g` function goes into an
+infinite loop. Does this mean that the entire expression is $⊥$?
+
+Yes.
+
+(b) Now, suppose that the appliaction of `f` goes into an infinite looop.
+Does this mean that the entire expression is $⊥$.
+
+Yes.
+
+Exercise 26
+-----------
+Each part of this exercise is a statement that might be *correct or
+incorrect*. Write Haskell programs to help you experiment, so that you
+can find the answer.
+
+(a) Let $f ∘ g$ be a function. If $f$ and $g$ are surjective then $f ∘ g$
+is surjective.
+
+> type ArgT a = Set a
+> type ResT b = Set b
+> type AppT a b = Set (a, FunVals b)
+> type FuncRep a b = (ArgT a, ResT b, AppT a b)
+>
+> mkFunHelper :: (a -> b) -> [a] -> (ArgT a, ResT b, AppT a b)
+> mkFunHelper fn dom =
+>     (Set dom, Set $ map fn dom, Set $ map (\x -> (x, Value $ fn x)) dom)
+>
+> functionalComposition :: (Ord a, Ord b, Ord c) => AppT b c -> AppT a b -> AppT a c
+> functionalComposition (Set appT1) (Set appT2) =
+>      let appComp = map (\(x, y) -> (x, app y)) appT2
+>          app Undefined = Undefined
+>          app (Value y) =
+>               case filter ((== y) . fst) appT1 of
+>                   (_,z):zs -> z
+>                   [] -> Undefined
+>          in (Set appComp)
+>
+> surjExp :: (Ord a, Ord b, Ord c)
+>         => FuncRep b c -> FuncRep a b -> Bool
+> surjExp (argT1, resT1, app1) (argT2, resT2, app2) =
+>     let
+>         sur1 = isSurjective argT1 resT1 app1
+>         sur2 = isSurjective argT2 resT2 app2
+>         comp = functionalComposition app1 app2
+>     in  if sur1 && sur2
+>         then isSurjective argT2 resT1 comp
+>         else True
+
+ (b) Let $f ∘ g$ be a function. If $f$ and $g$ are injective then $f ∘ g$
+  is injective.
+     Yes?
+ (c) If $f ∘ g$ is bijective then $f$ is surjective and $g$ is injective.
+     Yes!
+ (d) If $f$ and $g$ are bijective then $f ∘ g$ is bijective.
+    - Yes!
