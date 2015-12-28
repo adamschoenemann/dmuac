@@ -1301,7 +1301,10 @@ is surjective.
 >
 > mkFunHelper :: (a -> b) -> [a] -> (ArgT a, ResT b, AppT a b)
 > mkFunHelper fn dom =
->     (Set dom, Set $ map fn dom, Set $ map (\x -> (x, Value $ fn x)) dom)
+>     let argT = Set dom
+>         resT = Set $ map fn dom
+>         fun  = Set $ map (\x -> (x, Value $ fn x)) dom
+>     in  (argT, resT, fun)
 >
 > functionalComposition :: (Ord a, Ord b, Ord c) => AppT b c -> AppT a b -> AppT a c
 > functionalComposition (Set appT1) (Set appT2) =
@@ -1313,15 +1316,18 @@ is surjective.
 >                   [] -> Undefined
 >          in (Set appComp)
 >
+> functionalComposition' (fa, fr, ff) (ga, gr, gf) =
+>     (ga, fr, functionalComposition ff gf)
+>
 > surjExp :: (Ord a, Ord b, Ord c)
 >         => FuncRep b c -> FuncRep a b -> Bool
-> surjExp (argT1, resT1, app1) (argT2, resT2, app2) =
+> surjExp f@(argT1, resT1, app1) g@(argT2, resT2, app2) =
 >     let
 >         sur1 = isSurjective argT1 resT1 app1
 >         sur2 = isSurjective argT2 resT2 app2
->         comp = functionalComposition app1 app2
+>         (compA, compR, comp) = functionalComposition' f g
 >     in  if sur1 && sur2
->         then isSurjective argT2 resT1 comp
+>         then isSurjective compA compR comp
 >         else True
 
  (b) Let $f ∘ g$ be a function. If $f$ and $g$ are injective then $f ∘ g$
