@@ -1337,3 +1337,234 @@ is surjective.
      Yes!
  (d) If $f$ and $g$ are bijective then $f ∘ g$ is bijective.
     - Yes!
+
+Exercise 27
+-----------
+The argument and result types given here are sets, not expressions or
+types in Haskell. Given the functions
+
+    f : {1,2,3} -> {4,5,6}
+    f 1 = 4
+    f 2 = 6
+    f 3 = 5
+
+    g : {4,5,6} -> {1,2,3}
+    g 4 = 1
+    g 5 = 1
+    g 6 = 2
+
+what is
+
+    (g ∘ f) 1 -- 1
+    (g ∘ f) 3 -- 1
+    (f ∘ g) 4 -- 4
+    (f ∘ g) 5 -- 4
+
+Exercise 28
+-----------
+State the properties of the following functions:
+
+    f : {3,4,5} -> {3,4,5}
+    f 3 = 4
+    f 4 = 5
+    f 5 = 3
+permutation
+
+    g : {0,1,2} -> {0,1,2}
+    g 0 = 0
+    g 1 = 1
+    g 2 = 2
+identity
+
+    h : {3,4,5} -> {3,4,5}
+    h 4 = 3
+    h 5 = 4
+    h 3 = 5
+inverse of f
+
+Exercise 29
+-----------
+Given the functions
+
+    f : {x,y,z} -> {7,8,9,10}
+    f x = 8
+    f y = 10
+    f z = 7
+
+    g : {7,8,9,10} -> {x,y,z}
+    g 7 = x
+    g 8 = x
+    g 9 = x
+    g 10 = x
+
+    h : {7,8,9,10} -> {7,8,9,10}
+    h 7 = 10
+    h 8 = 7
+    h 9 = 8
+    h 10 = 9
+describe the following functions:
+
+    g ∘ f -- {(x,x),(y,x),(z,x)}, i.e. "const x"
+    h ∘ f -- {(x,7),(y,9),(z,10)}, an injection
+    g ∘ h -- {(7,x),(8,x),(9,x),(10,x)}, i.e. "const x"
+
+Exercise 30
+-----------
+Given the domain and codomain $\\{1,2,3,4,5\\}$, which of the following
+are functions?
+
+    f 1 = 2
+    f 2 = 3
+    f 3 = 3
+    f 3 = 4
+    f 4 = 4
+    f 5 = 5
+
+    g 1 = 2
+    g 2 = 1
+    g 3 = 4
+    g 4 = 4
+    g 5 = 3
+
+    h 1 = 2
+    h 2 = 3
+    h 3 = 4
+    h 4 = 1
+
+`f` maps 3 to two values, so it is not a function.
+`h` does not contain 5 in its domain, so it "doesn't work"
+`g` is fine, but it is not an injection.
+
+Exercise 31
+-----------
+Determine which of the following definitions are partial functions
+over the set $\\{1,2,3\\}$.
+
+    f 1 = undefined
+    f 2 = 1
+    f 3 = 2
+
+    g 1 = 3
+    g 2 = 2
+    g 3 = 1
+
+    h 1 = undefined
+    h 2 = undefined
+    h 3 = undefined
+
+`f` and `h`, `g` is total.
+
+Exercise 32
+-----------
+The following functions are defined over the sets $\\{1,2,3\\}$ and
+$\\{7,8,9,10\\}$.
+
+    f 1 = 7
+    f 2 = 8
+    f 3 = 9
+
+    g 7 = 1
+    g 8 = 2
+    g 9 = 3
+    g 10 = 1
+
+    h 1 = 3
+    h 2 = 2
+    h 3 = 1
+
+Which of the following are surjections?
+
+    h o h
+    f o g
+    g o f
+    h o f
+    g o h
+
+`h ∘ h`,
+not `g ∘ f`, `f` is not surjective
+not `g ∘ h` domains don't match,
+not `f ∘ g`, 10 is missing in `f`'s image
+not `h ∘ f` domains don't match
+
+Exercise 33
+-----------
+The functions `f`, `g`, and `h` are defined over the sets $\\{1,2,3\\}$ and
+$\\{4,5,6\\}$; which of them are injections?
+
+    f 1 = 4
+    f 2 = 5
+    f 3 = 5
+
+    g 4 = 1
+    g 5 = 2
+    g 6 = 3
+
+    h 4 = 1
+    h 5 = 1
+    h 6 = 1
+
+Exercise 34
+-----------
+Consider the following functions defined over the sets $\\{1,2,3\}$$
+and $\\{6,7,8,9\\}$; which of them are bijections?
+
+    f 6 = 1
+    f 7 = 2
+    f 8 = 3
+    f 9 = 3
+
+    g 1 = 3
+    g 2 = 2
+    g 3 = 1
+
+    h 1 = 6
+    h 2 = 7
+    h 3 = 8
+
+    g o g
+    h o f
+    f o h
+
+Exercise 35
+-----------
+Which of these functions is a partial function?
+
+    function1 True = False
+    function1 False = function1 False
+    function2 True = True
+    function2 False = True
+
+Exercise 36
+-----------
+Using normalForm and map, write a function that takes a list
+of pairs and determines whether the list represents a function. You can
+assume in this and the following questions that the domain is the set of
+first elements of the pairs and the image is the set of second pair elements.
+
+Exercise 37
+-----------
+Using normalForm and map, define a function isInjection so
+that it returns True if the argument represents an injective function and
+False otherwise.
+
+Exercise 38
+-----------
+Is it possible to write a function that determines whether a list
+of pairs represents a surjective function without passing in the codomain
+of the function?
+
+Exercise 39
+-----------
+How much information would you need to know about a Haskell
+function in order to be able to tell that it is not the identity function?
+
+Exercise 40
+-----------
+Write a function with type
+
+    compare
+        :: (Eq a, Eq b, Eq c, Show a, Show b, Show c)
+        => (a -> b) -> (b -> c) -> (a -> c) -> a -> Bool
+
+that takes three functions `f`, `g`, and `h` and determines whether `f o g = h`
+for some value of type `a`.
