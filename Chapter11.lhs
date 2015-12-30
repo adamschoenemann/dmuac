@@ -1489,7 +1489,7 @@ not `h ∘ f` domains don't match
 Exercise 33
 -----------
 The functions `f`, `g`, and `h` are defined over the sets $\\{1,2,3\\}$ and
-$\\{4,5,6\\}$; which of them are injections?
+$\\{4,5,6\\}$
 
     f 1 = 4
     f 2 = 5
@@ -1503,9 +1503,23 @@ $\\{4,5,6\\}$; which of them are injections?
     h 5 = 1
     h 6 = 1
 
+Which of these are injections?
+
+
+    f -- no
+    g -- yes
+    h -- no
+    h o h -- invalid domain
+    f o g -- both 5 and 6 map to 2
+    g o f -- both 2 and 3 map to 5
+    h o f -- nope, it is const 4
+    g o h -- invalid domains
+
+
+
 Exercise 34
 -----------
-Consider the following functions defined over the sets $\\{1,2,3\}$$
+Consider the following functions defined over the sets $\\{1,2,3\\}$
 and $\\{6,7,8,9\\}$; which of them are bijections?
 
     f 6 = 1
@@ -1521,9 +1535,9 @@ and $\\{6,7,8,9\\}$; which of them are bijections?
     h 2 = 7
     h 3 = 8
 
-    g o g
-    h o f
-    f o h
+    g o g -- yes, this is id
+    h o f -- nope, not injective
+    f o h -- no, f is not surjective
 
 Exercise 35
 -----------
@@ -1534,18 +1548,31 @@ Which of these functions is a partial function?
     function2 True = True
     function2 False = True
 
+function1 is partial, because its second clause never terminates and is
+therefore undefined.
+
+
 Exercise 36
 -----------
-Using normalForm and map, write a function that takes a list
+Using `normalForm` and `map`, write a function that takes a list
 of pairs and determines whether the list represents a function. You can
 assume in this and the following questions that the domain is the set of
 first elements of the pairs and the image is the set of second pair elements.
 
+> isFunction :: Eq a => [(a,b)] -> Bool
+> isFunction fun =
+>    let dom = map fst fun
+>    in  normalForm dom
+
 Exercise 37
 -----------
-Using normalForm and map, define a function isInjection so
-that it returns True if the argument represents an injective function and
-False otherwise.
+Using `normalForm` and `map`, define a function `isInjection` so
+that it returns `True` if the argument represents an injective function and
+`False` otherwise.
+
+> isInjection :: (Eq a, Eq b) => [(a,b)] -> Bool
+> isInjection fun =
+>     normalForm (map snd fun) && normalForm (map fst fun)
 
 Exercise 38
 -----------
@@ -1553,10 +1580,16 @@ Is it possible to write a function that determines whether a list
 of pairs represents a surjective function without passing in the codomain
 of the function?
 
+Nope.
+
 Exercise 39
 -----------
 How much information would you need to know about a Haskell
 function in order to be able to tell that it is not the identity function?
+
+If you know just its type, you can know that it cannot be the id function
+if the domain type is different from its codomain type.
+
 
 Exercise 40
 -----------
@@ -1568,3 +1601,71 @@ Write a function with type
 
 that takes three functions `f`, `g`, and `h` and determines whether `f o g = h`
 for some value of type `a`.
+
+
+> compare :: (Eq a, Eq b, Eq c)
+> compare f g h a = f (g a) == h a
+
+Exercise 41
+-----------
+Is this definition of isEven inductive?
+
+    isEven :: Int -> Bool
+    isEven 0 = True
+    isEven 1 = False
+    isEven n = isEven (n-2)
+
+Yes, for naturals
+
+Exercise 42
+-----------
+Is this definition of isOdd inductive?
+
+    isOdd 0 = False
+    isOdd 1 = True
+    isOdd n =
+        if (n < 0) then isOdd (n+2) else isOdd (n-2)
+
+Yes
+
+Exercise 43
+-----------
+$$
+A = \\{1,2,3,4,5\\}
+B = \\{6,7,8,9,10\\}
+D = \\{7,8,9,10\\}
+C = \\{a,b,c,d,e\\}
+f :: A → B,f = \\{(1,7),(2,6),(3,9),(4,7),(5,10)\\}
+g = \\{(6,b),(7,a),(6,d),(8,c),(10,b)\\}
+$$
+
+1. Is $f$ a function? Why or why not?
+    - Yes, every element in its domain has a unique value in the image
+2. Is $f$ injective (that is, one-to-one)? Why or why not?
+    - No, 1 -> and 4 -> 7
+3. Is $f$ surjective (that is, onto)? Why or why not
+    - No, because 8 is not in its image
+4. Is $g$ a function? Why or why not?
+    - Nope, because 6 appears twice in the domain
+
+Exercise 44
+-----------
+Let $A = 1,2,...,n$. Suppose $f :: A → P(A)$, where $P(A)$ is the
+powerset of $A$.
+
+1. Prove that $f$ is not surjective.
+    - The domain of $f$ contains $n$ elements. The codomain of $f$
+      containts $n^2$ elements (see def. of powerset). For every
+      element $y$ of $P(A)$ there must be an element in $x$ A, such that
+      $f(x) = y$. Since there are always more elements in $P(A)$ than in
+      $A$, there cannot be a $A$ for all $P(A)$, so it is not surjective.
+2. Suppose $g :: X → Y$ and the set $(g . f)(A)$ is a subset of $A$ (same $A$
+   and same $f$ as before), where the dot operator $(.)$ stands for function
+   composition. State the relationships among $A, X$, and $Y$.
+    - $X = P(A)$
+3. Can $g$ be injective? Why or why not?
+    - Yes? Nothing stops it from mapping a single value from any $x$ in $X$,
+      e.g. `length`
+4. Define $f$ and $g$ with the above domains and ranges such that $(f . g)$
+   is bijective (again, the dot operator $(.)$ stands for function composi-
+   tion).

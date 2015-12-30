@@ -183,7 +183,7 @@ A Show instance
 A Eq instance
 
 > instance (Eq a, Ord a) => Eq (Set a) where
->   (Set x) == (Set y) = (sort . deduplicate) x == (sort . deduplicate) y
+>   (Set x) == (Set y) = (sort . normalizeSet) x == (sort . normalizeSet) y
 
 An Ord instance
 
@@ -204,17 +204,20 @@ An Arbitrary instance for testing (Ints only)
 
 Some helpers to ensure that any set is de-duplicated.
 
-> deduplicate :: Eq a => [a] -> [a]
-> deduplicate xs = dedup xs [] where
+> normalizeSet :: Eq a => [a] -> [a]
+> normalizeSet xs = dedup xs [] where
 >   dedup []     res = res
 >   dedup (x:xs) res = if x `elem` res
 >                            then dedup xs res
 >                            else dedup xs (res ++ [x])
 
+> normalForm :: Eq a => [a] -> Bool
+> normalForm xs = length (normalizeSet xs) == length xs
+
 And constructors
 
 > fromList :: (Ord a, Eq a) => [a] -> Set a
-> fromList xs = Set ((sort . deduplicate) xs)
+> fromList xs = Set ((sort . normalizeSet) xs)
 
 And a converter
 
@@ -702,7 +705,7 @@ function, write a function that takes a set and returns its
 powerset. Use `foldr`.
 
 > powerlist' :: (Ord a, Eq a) => [a] -> [[a]]
-> powerlist' xs = deduplicate $ foldr g [[]] xs where
+> powerlist' xs = normalizeSet $ foldr g [[]] xs where
 >   g x acc =
 >       [x : epset | epset <- acc
 >                  , not (elem x epset) && smaller x epset]
@@ -757,7 +760,7 @@ Exercise 19
 Write a function using a list comprehension that takes
 two sets and returns their union.
 
-> union' xs ys = [x | x <- deduplicate $ xs ++ ys]
+> union' xs ys = [x | x <- normalizeSet $ xs ++ ys]
 
 Exercise 20
 -----------
