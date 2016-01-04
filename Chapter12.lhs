@@ -2,8 +2,8 @@
 
 12. The AVL Tree Miracle
 ========================
-What this describes is just a Binary Search Tree, indexed on integers
-with a payload
+What this describes is just a Binary Search Tree that **always keeps itself balanced**,
+indexed on integers with a payload.
 
 > data SearchTree d = Leaf | Node Integer d (SearchTree d) (SearchTree d)
 >
@@ -166,7 +166,7 @@ a lid on height as items are added or deleted from the tree.
 
 A tree is *node balanced*, if every node has an equal number of children.
 A more useful property is *height-balanced*, which is cheaper to accomplish.
-A HB trees height grows at the same rate as the lograithm of the number
+A HB trees height grows at the same rate as the logarithm of the number
 of data items.
 
 A tree is height balanced if, at all levels, the height of the left subtree is
@@ -202,5 +202,23 @@ implement this function.
 - Insert to preserve order
 - Worst that can happen wrt. balance is the height of the subtree where
   the node is inserted can become 2 greater than its sibling.
-  - if the left subtree becomes too large we perform an "easy-right rotation".
+  - if the left subtree becomes too large, the tree is "outside left-heavy"
+    - To rebalance, we perform an "easy-right rotation".
   - ![Figure 12.4](./images/fig.12.4.jpg)
+
+> easyR :: SearchTree d -> SearchTree d
+> easyR (Node z d (Node x a xL xR) zR) = (Node x a xL (Node z d xR zR))
+
+We need to prove that easy-right rotation preserves ordering, and rebalances
+an unbalanced tree.
+
+Here is a definition of what it means to be outside left-heavy:
+
+> outLeft :: SearchTree d -> Bool
+> outLeft (Node z d (Node x a xL xR) zR) = 
+>    (height xL >= height xR) && (height xL <= (height xR + 1)) &&
+>    (height xR >= height zR) && (height xL == (height zR + 1))
+>
+> height :: SearchTree d -> Int
+> height Leaf = 0
+> height (Node _ _ l r) = 1 + (max (height l) (height r))
