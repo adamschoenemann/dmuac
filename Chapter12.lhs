@@ -218,7 +218,45 @@ Here is a definition of what it means to be outside left-heavy:
 > outLeft (Node z d (Node x a xL xR) zR) = 
 >    (height xL >= height xR) && (height xL <= (height xR + 1)) &&
 >    (height xR >= height zR) && (height xL == (height zR + 1))
->
+
 > height :: SearchTree d -> Int
 > height Leaf = 0
 > height (Node _ _ l r) = 1 + (max (height l) (height r))
+
+Theorem 86. (easyR preserves order)
+-----------------------------------
+$$
+\begin{array}
+∀z. ∀d. ∀x. ∀a. ∀xL. ∀xR. ∀zR. \\\
+\quad ordered\ (\mathtt{Node\ z\ d\ (Node\ x\ a\ xL\ xR)\ zR}) → \\\
+    \quad\quad ordered\ (\mathtt{easyR\ (Node\ z\ d\ (Node\ x\ a\ xL\ xR)\ zR}))
+\end{array}
+$$
+
+Theorem 87. (easyR restores balance to outside left-heavy trees)
+----------------------------------
+$$
+\begin{array}
+∀z. ∀d. ∀x. ∀a. ∀xL. ∀xR. ∀zR. \\\
+\quad (balanced\ (xL) ∧ balanced\ (xR) ∧ balanced\ (zR) \\\
+\quad\quad ∧\ \mathtt{outLeft\ (Node\ z\ d\ (Node\ x\ a\ xL\ xR)\ zR))} \\\
+\quad\quad\quad   → \mathtt{balanced\ (easyR\ (Node\ z\ d\ (Node\ x\ a\ xL\ xR)\ zR))}
+\end{array}
+$$
+
+Moar stuff (I will skip for now)
+================================
+- "Harder" rotations, involving inside-unbalanced trees
+    - Basically, it requires two rotations instead (first of the unbalanced)
+      node, and then its parent node
+- Insertion operation
+    - Involves inserting a node, and then rotating (easy or hard), if necessary
+    - Also examines heights of subtrees a lot
+        - To eliminate this $log(n)$ operation, we can construct a new AVL type
+          that keeps track of heights, which is relatively easy
+- Deletion
+    - Involves finding the end of the right "spine" of the left subnode of
+      the node for deletion (the value that is "just below" the node for deletion) 
+    - "Replace" the deleted node with the above mentioned "spine-node"
+        - Do some rotations if unbalanced
+
