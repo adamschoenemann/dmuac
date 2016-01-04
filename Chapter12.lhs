@@ -157,3 +157,50 @@ it was not persent.
 >    else if key < key
 >    then getItem l key
 >    else getItem r key
+
+12.6 Balanced Trees
+===================
+Retrieval, insertion, and deletion in a search tree can be done in an amount of
+time proportional to the height of the tree. Therefore, it is important to keep
+a lid on height as items are added or deleted from the tree.
+
+A tree is *node balanced*, if every node has an equal number of children.
+A more useful property is *height-balanced*, which is cheaper to accomplish.
+A HB trees height grows at the same rate as the lograithm of the number
+of data items.
+
+A tree is height balanced if, at all levels, the height of the left subtree is
+either the same as the height of the right subtree, or taller by one,
+or shorter by one.
+This notion is made precise by the following definition.
+$$
+balanced\ (s) =
+    ∀ (\mathtt{Node\ k\ d\ lf\ rt}) ⊆ s. |\ \mathtt{height (lf) − height (rt)}\ | ≤ 1
+$$
+
+Our goal is to define an insertion operator that preserves order, balance,
+and the items in the tree. That is, we want the insertion operator, for which
+we use the symbol $(ˆ:)$, to satisfy the following properties.
+$$
+\begin{array}
+∀s. ∀k. ∀d. ordered (s) → ordered ((k, d) ˆ: s)            & \\{ˆ: ord\\} \\\
+∀s. ∀k. ∀d. balanced (s) → balanced ((k, d) ˆ: s)          & \\{ˆ: bal\\} \\\
+∀s. ∀k. ∀d. ∀x. (x ∈ s) → (x ∈ ((k,d)ˆ: s))                & \\{ˆ: old ∈\\} \\\
+∀s. ∀k. ∀d. k ∈ ((k,d)ˆ: s)                                & \\{ˆ: new ∈\\} \\\
+∀s. ∀k. ∀d. ∀x. ((x ?∈ s) ∧ (x ?= k)) → (x ?∈ ((k,d)ˆ: s)) & \\{ˆ:?∈\\}
+\end{array}
+$$
+Furthermore, the number of steps required to carry out an insertion must
+grow in the same proportion as the height of the tree.
+
+There are some different cases we'll encounter when doing attempting to
+implement this function.
+
+12.6.1 Rebalancing in the Easy Cases
+====================================
+- If the tree is already balanced and ordered
+- Insert to preserve order
+- Worst that can happen wrt. balance is the height of the subtree where
+  the node is inserted can become 2 greater than its sibling.
+  - if the left subtree becomes too large we perform an "easy-right rotation".
+  - ![Figure 12.4](./images/fig.12.4.jpg)
