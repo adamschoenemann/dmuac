@@ -122,3 +122,86 @@ output and s is the sum.
 >    let (c',  s ) = halfAdd a b
 >        (c'', s') = halfAdd c s
 >     in (c'' `or2` c', s')
+
+Theorem 107 (Correctness of full adder).
+----------------------------------------
+Let $(c' ,s) = fullAdd\ (a,b) c$, so that $c'$ is the carry output
+and $s$ is the sum output.
+Then $bitValue\ c' × 2 + bitValue\ s = bitValue\ a + bitValue\ b + bitValue\ c$.
+
+Exercise 3
+----------
+Use Haskell to test the half adder on the following test cases, and check
+that it procduces the correct results.
+
+    Test cases for half adder, with predicted results
+    halfAdd False False -- 0 0
+    halfAdd False True  -- 0 1
+    halfAdd True False  -- 1 0
+    halfAdd True True   -- 1 1
+
+Exercise 4
+----------
+Prove Theorem 106 using truth tables.
+
+|  a  |  b  |  c  |  s  |
+| :-: | :-: | :-: | :-: |
+|  0  |  0  |  0  |  0  |
+|  0  |  1  |  0  |  1  |
+|  1  |  0  |  0  |  1  |
+|  1  |  1  |  1  |  0  |
+
+    1. 2 × 0 + 0 = 0 + 0 ==> 0 = 0
+    2. 2 x 0 + 1 = 0 + 1 ==> 1 = 1
+    3. 2 × 0 + 1 = 1 + 0 ==> 1 = 1
+    4. 2 × 1 + 0 = 1 + 1 ==> 2 = 2
+
+
+Exercise 5
+----------
+Prove Theorem 107. 
+
+    0 × 2 + 0 = 0 + 0 + 0  ===> 0 = 0
+    0 × 2 + 1 = 0 + 0 + 1  ===> 1 = 1
+    0 × 2 + 1 = 0 + 1 + 0  ===> 1 = 1
+    1 × 2 + 0 = 0 + 1 + 1  ===> 2 = 2
+    0 × 2 + 1 = 1 + 0 + 0  ===> 1 = 1
+    1 × 2 + 0 = 1 + 0 + 1  ===> 2 = 2
+    1 × 2 + 0 = 1 + 1 + 0  ===> 2 = 2
+    1 × 2 + 1 = 1 + 1 + 1  ===> 3 = 3
+
+13.2.5 Binary Representation
+============================
+We can build "words" from bits by stringing them together, like so
+
+$$
+[x_0,x_1,x_2,x_3]
+$$
+
+Where $x_0$ is the most significant digit.
+
+In general the value of a $k$-bit word $x = [x_0, ..., x_{k-1}]$ is
+$$
+    \sum_{i=0}^{k-1} x_i × 2^{k - (i + 1)}
+$$
+
+In Haskell
+
+> wordValue :: (Eq a, Signal a) => [a] -> Integer
+> wordValue [] = 0
+> wordValue (x:xs) = let 
+>    k = length xs
+>    in (bitValue x) * 2 ^ k + wordValue xs
+
+Exercise 6
+----------
+Work out the numeric value of the word $[1,0,0,1,0]$. Then check
+your result by using the computer to evaluate:
+
+    wordValue [True, False, False, True, False]
+
+$$
+1 × 2^4 + 0 × 2^3 + 0 × 2^2 + 1 × 2^1 + 0 × 2^0 = 16 + 2 = 18
+$$
+
+
