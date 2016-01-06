@@ -17,6 +17,7 @@
 >     or2  = (||)
 >     xor a b = not (a == b)
 
+
 Exercise 1
 ----------
 Design a circuit that implements the following truth table:
@@ -99,3 +100,25 @@ using Haskell to simulate the circuit for all the input combinations; the only
 difference is notational. The details of this proof are left to you to work out.
 For larger circuits, correctness proofs are not at all like simulators. We will see
 the difference later in this chapter.
+
+In order to add words representing binary numbers, it will be necessary to
+add three bits: one data bit from each of the words, and a carry input bit.
+This function is provided by the full adder circuit as with the
+half adder, there is a two-bit result $(c', s)$, where $c'$ is the carry 
+output and s is the sum.
+
+|  a  |  b  |  c  |  c' |  s  |
+| :-: | :-: | :-: | :-: | :-: |
+|  0  |  0  |  0  |  0  |  0  |
+|  0  |  0  |  1  |  0  |  1  |
+|  0  |  1  |  0  |  0  |  1  |
+|  0  |  1  |  1  |  1  |  0  |
+|  1  |  0  |  0  |  0  |  1  |
+|  1  |  0  |  1  |  1  |  0  |
+|  1  |  1  |  0  |  1  |  0  |
+|  1  |  1  |  1  |  1  |  1  |
+
+> fullAdd (a, b) c =
+>    let (c',  s ) = halfAdd a b
+>        (c'', s') = halfAdd c s
+>     in (c'' `or2` c', s')
