@@ -7,6 +7,7 @@
 >    zero, one  :: a
 >    inv :: a -> a
 >    and2, or2, xor :: a -> a -> a
+>    and3 :: a -> a -> a -> a
 
 > instance Signal Bool where
 >     zero = False
@@ -14,6 +15,7 @@
 >     inv False = True
 >     inv True  = False
 >     and2 = (&&)
+>     and3 x y z = x && y && z
 >     or2  = (||)
 >     xor a b = not (a == b)
 
@@ -222,3 +224,118 @@ Calculate sum of two words
 >    let (a2, cs) = mscanr f a xs
 >        (a3, c) = f x a2
 >    in  (a3, c:cs)
+
+> rippleAdd :: Signal a => a -> [(a,a)] -> (a, [a])
+> rippleAdd c zs = mscanr fullAdd c zs
+
+Exercise 9
+----------
+Work out a test case using the ripple carry adder to calculate
+13+41=54, using 6-bit words. Test it using the computer.
+
+Helper functions
+
+By hand
+
+    13 = 8 + 4 + 1  = 001101
+    41 = 32 + 8 + 1 = 101001 +
+                    = 110110
+
+13.3.3 Correctness of the Ripple Carry Adder
+============================================
+Theorem 108
+-----------
+Let $xs$ and $ys$ be $k$-bit words, so $xs,ys :: Signal\ a => [a]$. Define
+$(c,sum) = rippleAdd\ zero\ (zip\ xs\ ys)$; thus $c :: a$ is the carry output
+and $ss :: [a]$ is the sum word. Then
+
+$$
+    bitValue\ c × 2^k + wordValue\ ss = wordValue\ xs + wordValue\ ys
+$$
+
+*Proof*. Induction over $k$. For the base case, $k = 0$, and $xs = ys = []$. First we
+simplify:
+
+    (c, ss) = rippleAdd zero []
+      = mscanr fullAdd zero []
+      = (zero, [])
+      
+    c = zero
+    ss = []
+    wordValue [] + wordValue [] = 0 + 0 = 0
+    
+    bitValue\ c × 2ᵏ + wordValue ss
+      = 0 × 2⁰ + 0
+      = 0 × 2⁰ + wordValue []
+      = 0
+
+For the inductive case, let $k = length\ xs = length\ ys$, and assume
+$$
+    bitValue\ c × 2^k + wordValue\ ss = wordValue\ xs + wordValue\ ys
+$$
+where $(c,ss) = rippleAdd\ zero\ (zip\ xs\ ys)$. The aim is to prove that
+$$
+    bitValue\ c × 2^{k+1} + wordValue\ ss = \\\
+    \quad\quad\quad wordValue (x : xs) + wordValue (y : ys)
+$$
+where $(c,ss) = rippleAdd\ zero\ (zip\ (x : xs) (y : ys))
+
+First we simplify:
+
+    (c,ss)  = mscanr fullAdd zero (zip (x :xs) (y : ys))  {rippleAdd}
+            = mscanr fullAdd zero ((x,y) : zip xs ys)     {zip}
+            = let (c', ss) = mscanr fullAdd zero (zip xs ys)
+                = rippleAdd zero (zip xs ys)
+            (c'', s) = fullAdd (x,y) c'
+            in (c'', s : ss)
+
+Now the left-hand side of the equation can be transformed into the right-hand
+side, using equational reasoning:
+
+    lhs (numeric value of output from the adder)
+        = bitValue c × 2ᵏ⁺¹ + wordValue ss
+        = bitValue c'' × 2ᵏ⁺¹ + wordValue (s : ss)         {substitute}
+        = bitValue c'' × 2ᵏ⁺¹ + bitValue s × 2ᵏ + wordValue ss
+        = (bitValue c'' × 2 + bitValue s) × 2ᵏ + wordValue ss
+        = (bitValue x + bitValue y + bitValue c ? ) × 2ᵏ + wordValue ss
+        = (bitValue x + bitValue y) × 2ᵏ + (bitValue c ? ) × 2ᵏ + wordValue ss)
+        = (bitValue x + bitValue y) × 2ᵏ + wordValue xs + wordValue ys
+        = (bbitValue x × 2ᵏ + wordValue xs) + (bitValue y × 2ᵏ + wordValue ys)
+        = wordValue (x : xs) + wordValue (y : ys)
+        = rhs (numeric value of inputs to the adder)
+
+13.3.4 Binary Comparison
+========================
+Compare 2 bits, outputting $(lt,eq,gt)$
+
+> halfCmp :: Signal a => (a,a) -> (a,a,a)
+> halfCmp (x, y) =
+>   let lt = (and2 (inv x) y)
+>       eq = inv (xor x y)
+>       gt = (and2 x (inv y))
+>   in (lt, eq, gt)
+
+Full compare, that takes $(lt,eq,gt)$ "until now" (from left to right) and two bits
+
+> fullCmp :: Signal a => (a,a,a) -> (a,a) -> (a,a,a)
+> fullCmp (lt,eq,gt) (x,y) =
+>    let lt' = or2 lt (and3 eq (inv x) y)
+>        eq' = and2 eq (inv (xor x y))
+>        gt' = or2 gt (and3 eq x (inv y))
+>    in (lt', eq', gt')
+
+Compare n-sized words, outputting $(lt,eq,gt)$. Goes left (most significant) to right
+
+> rippleCmp :: Signal a => [(a,a)] -> (a,a,a)
+> rippleCmp z = foldl fullCmp (zero, one, zero) z
+
+Exercise 10
+-----------
+Define a full set of test cases for the circuit halfCmp, which
+compares two bits, and execute them using the computer.
+
+Exercise 11
+-----------
+Define three test cases for the rippleCmp circuit, with a word
+size of three bits, demonstrating each of the three possible results. Run
+your test cases on the computer.
