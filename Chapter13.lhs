@@ -204,4 +204,21 @@ $$
 1 × 2^4 + 0 × 2^3 + 0 × 2^2 + 1 × 2^1 + 0 × 2^0 = 16 + 2 = 18
 $$
 
+13.3 Ripple Carry Addition
+==========================
+Calculate sum of two words
 
+> add4 :: Signal a => a -> [(a,a)] -> (a, [a])
+> add4 c [(x0, y0),(x1,y1),(x2,y2),(x3,y3)] =
+>    let (c0, s0) = fullAdd (x0, y0) c1
+>        (c1, s1) = fullAdd (x1, y1) c2
+>        (c2, s2) = fullAdd (x2, y2) c3
+>        (c3, s3) = fullAdd (x3, y3) c
+>    in (c0, [s0, s1, s2, s3])
+
+> mscanr :: (b -> a -> (a, c)) -> a -> [b] -> (a, [c])
+> mscanr f a [] = (a, [])
+> mscanr f a (x:xs) = 
+>    let (a2, cs) = mscanr f a xs
+>        (a3, c) = f x a2
+>    in  (a3, c:cs)
