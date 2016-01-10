@@ -19,6 +19,15 @@
 >     or2  = (||)
 >     xor a b = not (a == b)
 
+> instance Signal Int where
+>     zero = 0
+>     one  = 1
+>     inv 0 = 1
+>     inv 1 = 0
+>     and2 x y = if x == 1 && y == 1 then 1 else 0
+>     and3 x y z = if all (== 1) [x,y,z] then 1 else 0
+>     or2  x y = if x == 1 || y == 1 then 1 else 0
+>     xor  x y = if x == y then 0 else 1
 
 Exercise 1
 ----------
@@ -54,6 +63,12 @@ Design a circuit that implements the following truth table:
 
 > -- demultiplexor has a single data input and a control input
 > demux1 a x = ((inv a) `and2` x, a `and2` x)
+
+| a | x | demux1 a x |
+| 0 | 0 | (0,0)      |
+| 0 | 1 | (1,0)      |
+| 1 | 0 | (0,0)      |
+| 1 | 1 | (0,1)      |
 
 Exercise 2
 ----------
@@ -334,8 +349,133 @@ Exercise 10
 Define a full set of test cases for the circuit halfCmp, which
 compares two bits, and execute them using the computer.
 
+> testHalfCmp = and $ do
+>     g <- [False, True]
+>     g2 <- [False, True]
+>     map test $ return (g,g2)
+>     where
+>        test x = halfCmp x == base x
+>        base (False,True) = (True,False,False)
+>        base (True,False) = (False,False,True)
+>        base _            = (False,True,False)
+
 Exercise 11
 -----------
 Define three test cases for the rippleCmp circuit, with a word
 size of three bits, demonstrating each of the three possible results. Run
 your test cases on the computer.
+
+    1. rippleCmp (zip [True,False,False]  [False,False,False]) == (False,False,True)
+    2. rippleCmp (zip [False,False,False] [False,False,False]) == (False,True,False)
+    3. rippleCmp (zip [False,True,False]  [True,False,False ]) == (True,False,False)
+
+13.5 Review Exercises
+=====================
+Exercise 12
+-----------
+Show that the `and4` logic gate, which takes four inputs $a, b, c$,
+and $d$ and outputs $a ∧ b ∧ c ∧ d$, can be implemented using only `and2`
+gates.
+
+> and4 a b c d = and2 (and2 (and2 a b) c) d
+
+Exercise 13
+-----------
+Work out a complete set of test cases for the full adder, and
+calculate the expected results. Then simulate the test cases and compare
+with the predicted results.
+
+> testFullAdder = and $ do
+>     g <- [False, True]
+>     g' <- [False, True]
+>     g'' <- [False, True]
+>     inputs <- [(g,(g',g''))] -- (carry, (x,y))
+>     map test $ return inputs
+>     where
+>        test :: (Bool, (Bool, Bool)) -> Bool
+>        test (c,x) = fullAdd x c == base x c
+>        base (x,y) True = 
+>            case (x,y) of
+>               (False,False) -> (False,True)
+>               (True,True)   -> (True,True)
+>               _             -> (True,False)
+>        base (x,y) False = 
+>            case (x,y) of
+>               (False,False) -> (False,False)
+>               (True,True)   -> (True,False)
+>               _             -> (False,True)
+
+
+Exercise 14
+-----------
+Suppose that a computer has 8 memory locations, with addresses
+$0,1,2,...7$. Notice that we can represent an address with 3 bits,
+and the size of the memory is $2^3$ locations. We name the address bits
+$a_0 a_1 a_2$ , where $a_0$ is the most significant bit and $a_2$ is the least significant.
+When a memory location is accessed, the hardware needs to send a signal
+to each location, telling it whether it is the one selected by the address
+$a_0 a_1 a_2$. Thus there are 8 *select* signals, one for each location, named
+$s_0 ,s_1 ,...,s_7$. Design a circuit that takes as inputs the three address bits
+$a_0 ,a_1 ,a_2$, and outputs the select signals $s_0 ,s_1 ,...,s_7$.
+Hint: use demultiplexors, arranged in a tree-like structure.
+(Note: modern computers
+have an address size from 32 to 64 bits, allowing for a large number of
+locations, but a 3-bit address makes this exercise more tractable!)
+
+    000 --> 00000001
+    001 --> 00000010
+    010 --> 00000100
+    011 --> 00001000
+    100 --> 00010000
+    101 --> 00100000
+    110 --> 01000000
+    111 --> 10000000
+
+
+    00 -> 0001
+    01 -> 0010
+    10 -> 0100 
+    11 -> 1000 
+
+
+> memSel1 x = demux1 (inv x) one
+> memSel2 [x0,x1] =
+>    let (a,b) = demux1 (inv x0) one
+>        (c,d) = demux1 (inv x1) b
+>    in  [a,b,c,d]
+
+> -- memSelect :: Signal a => [a] -> [a]
+> -- memSelect [z0,z1,z2] =
+> --    let (x0,y0) = demux1 z0 z1
+> --        (x1,y1) = demux1 x0 
+
+Exercise 15
+-----------
+Does the definition of rippleAdd allow the word size to be 0? If
+not, what prevents it? If so, what does it mean?
+
+Exercise 16
+-----------
+Does the definition of rippleAdd allow the word size to be neg-
+ative? If not, what prevents it? If so, what does it mean?
+
+Exercise 17
+-----------
+Note that for the half adder and full adder, we did thorough
+testing—we checked the output of the circuit for every possible input.
+Note also that we did not do this for the ripple carry adder, where we just
+tried out a few particular examples. The task: Explain why it is infeasible
+to do thorough testing of a ripple carry adder circuit, and estimate how
+long it would take to test all possible input values for the binary adder
+in a modern processor where the words are 64 bits wide.
+
+Exercise 18
+-----------
+Computer programs sometimes need to perform arithmetic, in-
+cluding additions and comparisons, on big integers consisting of many
+words. Most computer processor architectures provide hardware support
+for this, and part of that hardware support consists of the ability to per-
+form an addition where the carry input is supplied externally, and is not
+assumed to be 0. Explain why the carry input to the rippleAdd circuit
+helps to implement multiword addition, but we don’t need an analogous
+horizontal input to rippleCmp for multiword comparisons
