@@ -62,7 +62,7 @@ Design a circuit that implements the following truth table:
 > mux1 a x y = (and2 (inv a) x) `or2` (and2 a y)
 
 > -- demultiplexor has a single data input and a control input
-> demux1 a x = ((inv a) `and2` x, a `and2` x)
+> demux1 s x = ((inv s) `and2` x, s `and2` x)
 
 | a | x | demux1 a x |
 | 0 | 0 | (0,0)      |
@@ -422,6 +422,14 @@ Hint: use demultiplexors, arranged in a tree-like structure.
 have an address size from 32 to 64 bits, allowing for a large number of
 locations, but a 3-bit address makes this exercise more tractable!)
 
+    0 -> 01
+    1 -> 10
+
+    00 -> 0001
+    01 -> 0010
+    10 -> 0100 
+    11 -> 1000 
+
     000 --> 00000001
     001 --> 00000010
     010 --> 00000100
@@ -431,51 +439,75 @@ locations, but a 3-bit address makes this exercise more tractable!)
     110 --> 01000000
     111 --> 10000000
 
-
-    00 -> 0001
-    01 -> 0010
-    10 -> 0100 
-    11 -> 1000 
-
-
 > memSel1 x = demux1 (inv x) one
+>        
 > memSel2 [x0,x1] =
->    let (a,b) = demux1 (inv x0) one
->        (c,d) = demux1 (inv x1) b
->    in  [a,b,c,d]
-
-> -- memSelect :: Signal a => [a] -> [a]
-> -- memSelect [z0,z1,z2] =
-> --    let (x0,y0) = demux1 z0 z1
-> --        (x1,y1) = demux1 x0 
+>    let (y0, y1) = memSel1 x0
+>        (z0, z1) = demux1 x1 y0
+>        (z2, z3) = demux1 x1 y1
+>    in [z1,z0,z3,z2]
+>
+> memSel3 [x0,x1,x2] =
+>    let (a0, a1) = demux1 (inv x0) one
+>        (b0, b1) = demux1 (inv x1) a0
+>        (b2, b3) = demux1 (inv x1) a1
+>        (c0, c1) = demux1 (inv x2) b0
+>        (c2, c3) = demux1 (inv x2) b1
+>        (c4, c5) = demux1 (inv x2) b2
+>        (c6, c7) = demux1 (inv x2) b3
+>    in [c0,c1,c2,c3,c4,c5,c6,c7]
+>
+> -- general memsel for any n bits
+> memSel (x:xs) = memSel' (demux1 (inv x) one) xs where
+>    memSel' (y0, y1) (x:xs) =
+>        let l = demux1 (inv x) y0
+>            r = demux1 (inv x) y1
+>        in memSel' l xs ++ memSel' r xs
+>    memSel' (y0, y1) [] =
+>        [y0,y1]
 
 Exercise 15
 -----------
 Does the definition of rippleAdd allow the word size to be 0? If
 not, what prevents it? If so, what does it mean?
 
+Yeap, then the result is just the carry, which means overflow?
+
 Exercise 16
 -----------
 Does the definition of rippleAdd allow the word size to be neg-
 ative? If not, what prevents it? If so, what does it mean?
 
+No, mscanr only works on lists, and lists cannot have a negative size.
+
 Exercise 17
 -----------
 Note that for the half adder and full adder, we did thorough
-testing—we checked the output of the circuit for every possible input.
+testing — we checked the output of the circuit for every possible input.
 Note also that we did not do this for the ripple carry adder, where we just
 tried out a few particular examples. The task: Explain why it is infeasible
 to do thorough testing of a ripple carry adder circuit, and estimate how
 long it would take to test all possible input values for the binary adder
 in a modern processor where the words are 64 bits wide.
 
+For a digital circuit with $n$ inputs there are $2^n$ possible permutations
+of input values. So with a ripple carry adder that takes two 64 bit words,
+it would be $2$ for the carry bit and $2^(2 × 64)$ for the words.
+These should be multiplied so its $2 × 2^{2 × n}$ where $n = 64$, which
+is $2^{^129}$ which is unbelieveably huge.
+
 Exercise 18
 -----------
-Computer programs sometimes need to perform arithmetic, in-
-cluding additions and comparisons, on big integers consisting of many
+Computer programs sometimes need to perform arithmetic,
+including additions and comparisons, on big integers consisting of many
 words. Most computer processor architectures provide hardware support
 for this, and part of that hardware support consists of the ability to per-
 form an addition where the carry input is supplied externally, and is not
-assumed to be 0. Explain why the carry input to the rippleAdd circuit
+assumed to be 0. Explain why the carry input to the `rippleAdd` circuit
 helps to implement multiword addition, but we don’t need an analogous
-horizontal input to rippleCmp for multiword comparisons
+horizontal input to rippleCmp for multiword comparisons.
+
+Because of carry bit, we can "nest" ripple adders to add "infitely"
+bigger words. The comparison circuits do not need this, because we
+can just compare each word with eachother, and then compare the results
+again.
